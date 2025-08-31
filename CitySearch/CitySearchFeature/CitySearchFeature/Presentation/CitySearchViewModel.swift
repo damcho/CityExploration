@@ -17,12 +17,15 @@ class CitySearchViewModel: ObservableObject {
     @Published var selectedCity: City?
     @Published var showSearchResults = false
     
-    private let cityStore: CitySearchable
+    let cityStore: CitySearchable
+    let favoritesManager: UserDefaultsFavoriteCityManager
     private var cancellables = Set<AnyCancellable>()
     
-    init(cityStore: CitySearchable) {
+    init(cityStore: CitySearchable, favoritesManager: UserDefaultsFavoriteCityManager) {
         self.cityStore = cityStore
+        self.favoritesManager = favoritesManager
         setupSearchSubscription()
+        setupFavoritesSubscription()
     }
     
     private func setupSearchSubscription() {
@@ -33,6 +36,16 @@ class CitySearchViewModel: ObservableObject {
                 Task {
                     await self?.performSearch(query: searchQuery)
                 }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupFavoritesSubscription() {
+        // Listen to favorites changes to trigger UI updates
+        favoritesManager.$favoritesCities
+            .sink { [weak self] _ in
+                // This will trigger a UI update for any views observing this ViewModel
+                self?.objectWillChange.send()
             }
             .store(in: &cancellables)
     }
@@ -79,5 +92,13 @@ class CitySearchViewModel: ObservableObject {
         errorMessage = nil
         showSearchResults = false
         selectedCity = nil
+    }
+    
+    func toggleFavorite(for city: City) {
+        favoritesManager.toggleFavorite(city)
+    }
+    
+    func isFavorite(_ city: City) -> Bool {
+        favoritesManager.isFavorite(city)
     }
 }

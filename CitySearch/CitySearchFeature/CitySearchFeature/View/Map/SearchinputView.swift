@@ -13,7 +13,6 @@ struct SearchinputView: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            // Search Bar
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
@@ -44,7 +43,6 @@ struct SearchinputView: View {
                     .stroke(isSearchFieldFocused ? Color.blue : Color.clear, lineWidth: 2)
             )
             
-            // Search Results
             if viewModel.showSearchResults {
                 if viewModel.isLoading {
                     HStack {
@@ -70,10 +68,10 @@ struct SearchinputView: View {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 8) {
                             ForEach(viewModel.searchResults, id: \.name) { city in
-                                CityResultRow(city: city) {
+                                CityResultRow(city: city, onTap: {
                                     viewModel.selectCity(city)
                                     isSearchFieldFocused = false
-                                }
+                                })
                             }
                         }
                         .padding(.horizontal)
@@ -89,46 +87,10 @@ struct SearchinputView: View {
     }
 }
 
-struct CityResultRow: View {
-    let city: City
-    let onTap: () -> Void
-    
-    var body: some View {
-        Button(action: onTap) {
-            HStack {
-                Image(systemName: "location.circle")
-                    .foregroundColor(.blue)
-                    .font(.title2)
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(city.name)
-                        .font(.body)
-                        .foregroundColor(.primary)
-                    
-                    Text("Lat: \(String(format: "%.4f", city.latitude)), Lon: \(String(format: "%.4f", city.longitude))")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .foregroundColor(.gray)
-                    .font(.caption)
-            }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
-            .background(Color(.systemBackground))
-            .cornerRadius(8)
-            .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-}
-
 #Preview {
     let store = try! InMemoryCityStore(jsonString: SampleData.citiesJSON)
-    let viewModel = CitySearchViewModel(cityStore: store)
+    let favoritesManager = UserDefaultsFavoriteCityManager()
+    let viewModel = CitySearchViewModel(cityStore: store, favoritesManager: favoritesManager)
     
     return SearchinputView(viewModel: viewModel)
 }

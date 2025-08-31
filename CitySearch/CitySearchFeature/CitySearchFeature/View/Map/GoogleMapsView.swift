@@ -27,17 +27,14 @@ struct GoogleMapView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: GMSMapView, context: Context) {
-        // Clear existing markers
         uiView.clear()
         
-        // If a city is selected, center the map and add a marker
         if let selectedCity = viewModel.selectedCity {
             let position = CLLocationCoordinate2D(
                 latitude: selectedCity.latitude,
                 longitude: selectedCity.longitude
             )
             
-            // Animate camera to the selected city
             let camera = GMSCameraPosition.camera(
                 withLatitude: selectedCity.latitude,
                 longitude: selectedCity.longitude,
@@ -45,7 +42,6 @@ struct GoogleMapView: UIViewRepresentable {
             )
             uiView.animate(to: camera)
             
-            // Add marker for the selected city
             let marker = GMSMarker()
             marker.position = position
             marker.title = selectedCity.name
