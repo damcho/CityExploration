@@ -73,6 +73,27 @@ struct InMemoryCityStoreTests {
         
         #expect(sut.search(uppercaseSearchPrefix) == [expectedCity.model])
     }
+    
+    @Test func finds_multiple_results_on_matching_prefix() async throws {
+        let expectedCities = [
+            city(name: "New York"),
+            city(name: "New Orleans")
+        ]
+        
+        let storeCities = [
+            city(name: "New York"),
+            city(name: "New Orleans"),
+            city(name: "Buenos Aires"),
+        ]
+
+        
+        let sut = makeSUT(cities: String(data: try! JSONSerialization.data(
+            withJSONObject: storeCities.map({ $0.raw }), options: []), encoding: .utf8)!)
+
+        let searchPrefix = "new"
+        
+        #expect(sut.search(searchPrefix) == expectedCities.map({$0.model}))
+    }
 }
 
 extension InMemoryCityStoreTests {
