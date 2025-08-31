@@ -39,7 +39,7 @@ struct InMemoryCityStore {
     
     func search(_ searchPrefix: String) -> [City] {
         cities.filter { city in
-            city.name.starts(with: searchPrefix)
+            city.name.lowercased().starts(with: searchPrefix.lowercased())
         }
     }
 }
@@ -62,6 +62,16 @@ struct InMemoryCityStoreTests {
         let searchPrefix = "buenos ai"
         
         #expect(sut.search(searchPrefix) == [expectedCity.model])
+    }
+    
+    @Test func finds_city_on_uppercase_prefix() async throws {
+        let expectedCity = city(name: "buenos aires")
+        let sut = makeSUT(cities: String(data: try! JSONSerialization.data(
+            withJSONObject: [expectedCity.raw], options: []), encoding: .utf8)!)
+        
+        let uppercaseSearchPrefix = "BUENOS AI"
+        
+        #expect(sut.search(uppercaseSearchPrefix) == [expectedCity.model])
     }
 }
 
