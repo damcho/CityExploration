@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8B27161D2E64E619002CD8D9 /* CitySearchFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27161C2E64E619002CD8D9 /* CitySearchFeature.framework */; };
+		8B27161E2E64E619002CD8D9 /* CitySearchFeature.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27161C2E64E619002CD8D9 /* CitySearchFeature.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		8B2715022E64C6A7002CD8D9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -16,9 +21,24 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		8B27161F2E64E619002CD8D9 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8B27161E2E64E619002CD8D9 /* CitySearchFeature.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		8B2714F42E64C6A5002CD8D9 /* CitySearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CitySearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B2715012E64C6A7002CD8D9 /* CitySearchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CitySearchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B27161C2E64E619002CD8D9 /* CitySearchFeature.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CitySearchFeature.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -39,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B27161D2E64E619002CD8D9 /* CitySearchFeature.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,6 +78,7 @@
 			children = (
 				8B2714F62E64C6A5002CD8D9 /* CitySearch */,
 				8B2715042E64C6A7002CD8D9 /* CitySearchTests */,
+				8B27161B2E64E619002CD8D9 /* Frameworks */,
 				8B2714F52E64C6A5002CD8D9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -70,6 +92,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		8B27161B2E64E619002CD8D9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8B27161C2E64E619002CD8D9 /* CitySearchFeature.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -80,6 +110,7 @@
 				8B2714F02E64C6A5002CD8D9 /* Sources */,
 				8B2714F12E64C6A5002CD8D9 /* Frameworks */,
 				8B2714F22E64C6A5002CD8D9 /* Resources */,
+				8B27161F2E64E619002CD8D9 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

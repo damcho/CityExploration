@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import CitySearchFeature
 
 @main
 struct CitySearchApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            CitySearchComposer.compose()
         }
     }
 }

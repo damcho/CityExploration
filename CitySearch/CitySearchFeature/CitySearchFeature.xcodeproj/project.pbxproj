@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8B2715902E64CBC9002CD8D9 /* CitySearchFeature.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2715862E64CBC8002CD8D9 /* CitySearchFeature.framework */; };
+		8B2715BB2E64E20A002CD8D9 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 8B2715BA2E64E20A002CD8D9 /* GoogleMaps */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B2715BB2E64E20A002CD8D9 /* GoogleMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,6 +64,7 @@
 			children = (
 				8B2715882E64CBC8002CD8D9 /* CitySearchFeature */,
 				8B2715932E64CBC9002CD8D9 /* CitySearchFeatureTests */,
+				8B2715B92E64E20A002CD8D9 /* Frameworks */,
 				8B2715872E64CBC8002CD8D9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -73,6 +76,13 @@
 				8B27158F2E64CBC9002CD8D9 /* CitySearchFeatureTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8B2715B92E64E20A002CD8D9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -106,6 +116,7 @@
 			);
 			name = CitySearchFeature;
 			packageProductDependencies = (
+				8B2715BA2E64E20A002CD8D9 /* GoogleMaps */,
 			);
 			productName = CitySearchFeature;
 			productReference = 8B2715862E64CBC8002CD8D9 /* CitySearchFeature.framework */;
@@ -162,6 +173,9 @@
 			);
 			mainGroup = 8B27157C2E64CBC8002CD8D9;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8B2715B82E64E1FE002CD8D9 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8B2715872E64CBC8002CD8D9 /* Products */;
 			projectDirPath = "";
@@ -344,11 +358,11 @@
 		8B2715992E64CBC9002CD8D9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
+				DEFINES_MODULE = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -356,6 +370,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -379,11 +394,11 @@
 		8B27159A2E64CBC9002CD8D9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
+				DEFINES_MODULE = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -391,6 +406,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -471,6 +487,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8B2715B82E64E1FE002CD8D9 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8B2715BA2E64E20A002CD8D9 /* GoogleMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B2715B82E64E1FE002CD8D9 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMaps;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8B27157D2E64CBC8002CD8D9 /* Project object */;
 }
