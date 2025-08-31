@@ -30,54 +30,7 @@ struct CitySearchMapView: View {
 }
 
 #Preview {
-    let sampleCities = """
-    [
-        {
-            "name": "Buenos Aires",
-            "coord": {
-                "lat": -34.6037,
-                "lon": -58.3816
-            }
-        },
-        {
-            "name": "Barcelona",
-            "coord": {
-                "lat": 41.3851,
-                "lon": 2.1734
-            }
-        },
-        {
-            "name": "Berlin",
-            "coord": {
-                "lat": 52.5200,
-                "lon": 13.4050
-            }
-        },
-        {
-            "name": "Boston",
-            "coord": {
-                "lat": 42.3601,
-                "lon": -71.0589
-            }
-        },
-        {
-            "name": "Bangkok",
-            "coord": {
-                "lat": 13.7563,
-                "lon": 100.5018
-            }
-        },
-        {
-            "name": "Beijing",
-            "coord": {
-                "lat": 39.9042,
-                "lon": 116.4074
-            }
-        }
-    ]
-    """
-    
-    let store = try! InMemoryCityStore(jsonString: sampleCities)
+    let store = try! InMemoryCityStore(jsonString: SampleData.citiesJSON)
     let viewModel = CitySearchViewModel(cityStore: store)
     
     return CitySearchMapView(viewModel: viewModel)

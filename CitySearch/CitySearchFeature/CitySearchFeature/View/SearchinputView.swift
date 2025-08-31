@@ -127,40 +127,7 @@ struct CityResultRow: View {
 }
 
 #Preview {
-    let sampleCities = """
-    [
-        {
-            "name": "Buenos Aires",
-            "coord": {
-                "lat": -34.6037,
-                "lon": -58.3816
-            }
-        },
-        {
-            "name": "Barcelona",
-            "coord": {
-                "lat": 41.3851,
-                "lon": 2.1734
-            }
-        },
-        {
-            "name": "Berlin",
-            "coord": {
-                "lat": 52.5200,
-                "lon": 13.4050
-            }
-        },
-        {
-            "name": "Boston",
-            "coord": {
-                "lat": 42.3601,
-                "lon": -71.0589
-            }
-        }
-    ]
-    """
-    
-    let store = try! InMemoryCityStore(jsonString: sampleCities)
+    let store = try! InMemoryCityStore(jsonString: SampleData.citiesJSON)
     let viewModel = CitySearchViewModel(cityStore: store)
     
     return SearchinputView(viewModel: viewModel)

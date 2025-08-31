@@ -19,10 +19,10 @@ struct InMemoryCityStore {
     struct DecodableCity: Decodable {
         let name: String
         let coord: DecodableCoordinate
-     
+        let country: String
         
         func toCity() -> City {
-            City(name: name, latitude: coord.lat, longitude: coord.lon)
+            City(name: name, country: country, latitude: coord.lat, longitude: coord.lon)
         }
     }
     
