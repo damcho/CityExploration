@@ -16,7 +16,7 @@ struct InMemoryCityStoreTests {
         
         let searchPrefix = "buenos ai"
         
-        #expect(sut.search(searchPrefix).isEmpty)
+        try await #expect(sut.search(for: searchPrefix).isEmpty)
     }
     
     @Test func finds_city_on_matching_result() async throws {
@@ -26,7 +26,7 @@ struct InMemoryCityStoreTests {
         
         let searchPrefix = "buenos ai"
         
-        #expect(sut.search(searchPrefix) == [expectedCity.model])
+        try await #expect(sut.search(for: searchPrefix) == [expectedCity.model])
     }
     
     @Test func finds_city_on_uppercase_prefix() async throws {
@@ -36,7 +36,7 @@ struct InMemoryCityStoreTests {
         
         let uppercaseSearchPrefix = "BUENOS AI"
         
-        #expect(sut.search(uppercaseSearchPrefix) == [expectedCity.model])
+        try await #expect(sut.search(for: uppercaseSearchPrefix) == [expectedCity.model])
     }
     
     @Test func finds_multiple_results_on_matching_prefix() async throws {
@@ -57,7 +57,7 @@ struct InMemoryCityStoreTests {
 
         let searchPrefix = "new"
         
-        #expect(sut.search(searchPrefix) == expectedCities.map({$0.model}))
+        try await #expect(sut.search(for: searchPrefix) == expectedCities.map({$0.model}))
     }
 }
 

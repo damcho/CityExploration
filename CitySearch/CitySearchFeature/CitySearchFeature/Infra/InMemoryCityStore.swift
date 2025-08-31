@@ -31,8 +31,10 @@ struct InMemoryCityStore {
             from: citiesData
         ).map({ $0.toCity() })
     }
-    
-    func search(_ searchPrefix: String) -> [City] {
+}
+
+extension InMemoryCityStore: CitySearchable {
+    func search(for searchPrefix: String) async throws -> [City] {
         cities.filter { city in
             city.name.lowercased().starts(with: searchPrefix.lowercased())
         }
