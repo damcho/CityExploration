@@ -12,7 +12,7 @@ import CitySearchFeature
 struct CitySearchApp: App {
     var body: some Scene {
         WindowGroup {
-            CitySearchComposer.compose()
+            try! CitySearchComposer.compose()
         }
     }
 }
