@@ -8,24 +8,14 @@
 import SwiftUI
 
 struct CitySearchMapView: View {
-    @ObservedObject var viewModel: CitySearchViewModel
+    @ObservedObject var searchViewModel: CitySearchViewModel
+    @ObservedObject var cardViewModel: CityCardViewModel
+    @ObservedObject var favoritesViewModel: FavoritesViewModel
     @State private var showFavorites = false
-    @State private var favoritesViewModel: FavoritesViewModel?
-    
-    private func getFavoritesViewModel() -> FavoritesViewModel {
-        if let existing = favoritesViewModel {
-            return existing
-        }
-        let newViewModel = FavoritesViewModel(
-            favoritesManager: viewModel.favoritesManager
-        )
-        favoritesViewModel = newViewModel
-        return newViewModel
-    }
     
     var body: some View {
         ZStack(alignment: .top) {
-            CityCardView(viewModel: viewModel)
+            CityCardView(searchViewModel: searchViewModel, cardViewModel: cardViewModel)
                 .ignoresSafeArea(.container, edges: .bottom)
             
             VStack(spacing: 0) {
@@ -47,7 +37,7 @@ struct CitySearchMapView: View {
                 }
                 .zIndex(2)
                 
-                SearchinputView(viewModel: viewModel)
+                SearchinputView(viewModel: searchViewModel)
                     .background(Color(.systemBackground))
                     .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
                 
@@ -56,8 +46,8 @@ struct CitySearchMapView: View {
             .zIndex(1)
         }
         .sheet(isPresented: $showFavorites) {
-            FavoritesView(viewModel: getFavoritesViewModel()) { selectedCity in
-                viewModel.selectCity(selectedCity)
+            FavoritesView(viewModel: favoritesViewModel) { selectedCity in
+                searchViewModel.selectCity(selectedCity)
                 showFavorites = false
             }
         }
@@ -67,7 +57,13 @@ struct CitySearchMapView: View {
 #Preview {
     let store = try! InMemoryCityStore(jsonString: SampleData.citiesJSON)
     let favoritesManager = UserDefaultsFavoriteCityManager()
-    let viewModel = CitySearchViewModel(cityStore: store, favoritesManager: favoritesManager)
+    let searchViewModel = CitySearchViewModel(cityStore: store)
+    let cardViewModel = CityCardViewModel(favoritesManager: favoritesManager)
+    let favoritesViewModel = FavoritesViewModel(favoritesManager: favoritesManager)
     
-    return CitySearchMapView(viewModel: viewModel)
+    return CitySearchMapView(
+        searchViewModel: searchViewModel,
+        cardViewModel: cardViewModel,
+        favoritesViewModel: favoritesViewModel
+    )
 }

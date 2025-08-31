@@ -16,8 +16,15 @@ public enum CitySearchComposer {
         
         let cityStore = try InMemoryCityStore(jsonString: SampleData.citiesJSON)
         let favoritesManager = UserDefaultsFavoriteCityManager()
-        let viewModel = CitySearchViewModel(cityStore: cityStore, favoritesManager: favoritesManager)
         
-        return CitySearchMapView(viewModel: viewModel)
+        let searchViewModel = CitySearchViewModel(cityStore: cityStore)
+        let cardViewModel = CityCardViewModel(favoritesManager: favoritesManager)
+        let favoritesViewModel = FavoritesViewModel(favoritesManager: favoritesManager)
+        
+        return CitySearchMapView(
+            searchViewModel: searchViewModel,
+            cardViewModel: cardViewModel,
+            favoritesViewModel: favoritesViewModel
+        )
     }
 }

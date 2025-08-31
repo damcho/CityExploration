@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 @MainActor
 class CitySearchViewModel: ObservableObject {
@@ -18,36 +17,33 @@ class CitySearchViewModel: ObservableObject {
     @Published var showSearchResults = false
     
     let cityStore: CitySearchable
-    let favoritesManager: UserDefaultsFavoriteCityManager
-    private var cancellables = Set<AnyCancellable>()
+    private var searchTask: Task<Void, Never>?
     
-    init(cityStore: CitySearchable, favoritesManager: UserDefaultsFavoriteCityManager) {
+    init(cityStore: CitySearchable) {
         self.cityStore = cityStore
-        self.favoritesManager = favoritesManager
-        setupSearchSubscription()
-        setupFavoritesSubscription()
     }
     
-    private func setupSearchSubscription() {
-        $searchText
-            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
-            .removeDuplicates()
-            .sink { [weak self] searchQuery in
-                Task {
-                    await self?.performSearch(query: searchQuery)
-                }
-            }
-            .store(in: &cancellables)
+    deinit {
+        searchTask?.cancel()
     }
     
-    private func setupFavoritesSubscription() {
-        // Listen to favorites changes to trigger UI updates
-        favoritesManager.$favoritesCities
-            .sink { [weak self] _ in
-                // This will trigger a UI update for any views observing this ViewModel
-                self?.objectWillChange.send()
+
+    
+    // Simple debounced search without Combine
+    func updateSearchText(_ newText: String) {
+        searchText = newText
+        
+        // Cancel previous search
+        searchTask?.cancel()
+        
+        // Start new search with delay
+        searchTask = Task {
+            try? await Task.sleep(for: .milliseconds(300))
+            
+            if !Task.isCancelled {
+                await performSearch(query: newText)
             }
-            .store(in: &cancellables)
+        }
     }
     
     private func performSearch(query: String) async {
@@ -92,13 +88,5 @@ class CitySearchViewModel: ObservableObject {
         errorMessage = nil
         showSearchResults = false
         selectedCity = nil
-    }
-    
-    func toggleFavorite(for city: City) {
-        favoritesManager.toggleFavorite(city)
-    }
-    
-    func isFavorite(_ city: City) -> Bool {
-        favoritesManager.isFavorite(city)
     }
 }

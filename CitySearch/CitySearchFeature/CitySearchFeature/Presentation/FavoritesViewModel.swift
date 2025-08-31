@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 @MainActor
 class FavoritesViewModel: ObservableObject {
@@ -15,40 +14,48 @@ class FavoritesViewModel: ObservableObject {
     @Published var errorMessage: String?
     
     private let favoritesManager: UserDefaultsFavoriteCityManager
-    private var cancellables = Set<AnyCancellable>()
+    private let observerId = UUID()
     
     init(favoritesManager: UserDefaultsFavoriteCityManager) {
         self.favoritesManager = favoritesManager
-        setupFavoritesSubscription()
+        setupFavoritesObserver()
         loadFavorites()
     }
     
-    private func setupFavoritesSubscription() {
-        favoritesManager.$favoritesCities
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] favorites in
-                self?.favoriteCities = favorites
+    private func setupFavoritesObserver() {
+        Task {
+            await favoritesManager.addObserver(id: observerId) { @Sendable [weak self] favorites in
+                Task { @MainActor in
+                    self?.favoriteCities = favorites
+                }
             }
-            .store(in: &cancellables)
+        }
     }
     
     func loadFavorites() {
         isLoading = true
         errorMessage = nil
         
-        favoriteCities = favoritesManager.getFavoriteCities()
-        isLoading = false
+        Task {
+            let favorites = await favoritesManager.getFavoriteCities()
+            favoriteCities = favorites
+            isLoading = false
+        }
     }
     
     func toggleFavorite(for city: City) {
-        favoritesManager.toggleFavorite(city)
+        Task {
+            await favoritesManager.toggleFavorite(city)
+        }
     }
     
-    func isFavorite(_ city: City) -> Bool {
-        favoritesManager.isFavorite(city)
+    func isFavorite(_ city: City) async -> Bool {
+        await favoritesManager.isFavorite(city)
     }
     
     func removeFavorite(_ city: City) {
-        favoritesManager.removeFromFavorites(city)
+        Task {
+            await favoritesManager.removeFromFavorites(city)
+        }
     }
 }

@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct CityCardView: View {
-    @ObservedObject var viewModel: CitySearchViewModel
+    @ObservedObject var searchViewModel: CitySearchViewModel
+    @ObservedObject var cardViewModel: CityCardViewModel
     
     var body: some View {
         ZStack {
-            GoogleMapView(viewModel: viewModel)
+            GoogleMapView(viewModel: searchViewModel)
             
             // City info card overlay with favorites button
-            if let selectedCity = viewModel.selectedCity {
+            if let selectedCity = searchViewModel.selectedCity {
                 VStack {
                     Spacer()
                     HStack {
@@ -40,16 +41,7 @@ struct CityCardView: View {
                                 Spacer()
                                 
                                 // Favorites button
-                                Button(action: {
-                                    viewModel.toggleFavorite(for: selectedCity)
-                                }) {
-                                    Image(systemName: viewModel.isFavorite(selectedCity) ? "heart.fill" : "heart")
-                                        .font(.title2)
-                                        .foregroundColor(viewModel.isFavorite(selectedCity) ? .red : .gray)
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                .scaleEffect(viewModel.isFavorite(selectedCity) ? 1.1 : 1.0)
-                                .animation(.easeInOut(duration: 0.2), value: viewModel.isFavorite(selectedCity))
+                                FavoriteButton(city: selectedCity, viewModel: cardViewModel)
                             }
                         }
                         .padding()
@@ -60,6 +52,37 @@ struct CityCardView: View {
                     }
                     .padding(.bottom, 100)
                 }
+            }
+        }
+    }
+}
+
+struct FavoriteButton: View {
+    let city: City
+    @ObservedObject var viewModel: CityCardViewModel
+    @State private var isFavorite = false
+    @State private var updateTrigger = 0
+    
+    var body: some View {
+        Button(action: {
+            viewModel.toggleFavorite(for: city)
+            updateTrigger += 1
+        }) {
+            Image(systemName: isFavorite ? "heart.fill" : "heart")
+                .font(.title2)
+                .foregroundColor(isFavorite ? .red : .gray)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .scaleEffect(isFavorite ? 1.1 : 1.0)
+        .animation(.easeInOut(duration: 0.2), value: isFavorite)
+        .task {
+            isFavorite = await viewModel.isFavorite(city)
+        }
+        .task(id: updateTrigger) {
+            if updateTrigger > 0 {
+                // Small delay to ensure the toggle has completed
+                try? await Task.sleep(for: .milliseconds(50))
+                isFavorite = await viewModel.isFavorite(city)
             }
         }
     }

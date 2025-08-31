@@ -10,6 +10,7 @@ import SwiftUI
 struct SearchinputView: View {
     @ObservedObject var viewModel: CitySearchViewModel
     @FocusState private var isSearchFieldFocused: Bool
+    @State private var localSearchText: String = ""
     
     var body: some View {
         VStack(spacing: 16) {
@@ -18,14 +19,18 @@ struct SearchinputView: View {
                     .foregroundColor(.gray)
                     .padding(.leading, 12)
                 
-                TextField("Search for cities...", text: $viewModel.searchText)
+                TextField("Search for cities...", text: $localSearchText)
                     .focused($isSearchFieldFocused)
                     .textFieldStyle(.plain)
                     .font(.body)
                     .submitLabel(.search)
+                    .onChange(of: localSearchText) { _, newValue in
+                        viewModel.updateSearchText(newValue)
+                    }
                 
-                if !viewModel.searchText.isEmpty {
+                if !localSearchText.isEmpty {
                     Button(action: {
+                        localSearchText = ""
                         viewModel.clearSearch()
                         isSearchFieldFocused = false
                     }) {
@@ -70,6 +75,7 @@ struct SearchinputView: View {
                             ForEach(viewModel.searchResults, id: \.name) { city in
                                 CityResultRow(city: city, onTap: {
                                     viewModel.selectCity(city)
+                                    localSearchText = ""  // Explicitly clear local state
                                     isSearchFieldFocused = false
                                 })
                             }
@@ -84,13 +90,20 @@ struct SearchinputView: View {
             }
         }
         .padding()
+        .onAppear {
+            localSearchText = viewModel.searchText
+        }
+        .onChange(of: viewModel.searchText) { _, newValue in
+            if localSearchText != newValue {
+                localSearchText = newValue
+            }
+        }
     }
 }
 
 #Preview {
     let store = try! InMemoryCityStore(jsonString: SampleData.citiesJSON)
-    let favoritesManager = UserDefaultsFavoriteCityManager()
-    let viewModel = CitySearchViewModel(cityStore: store, favoritesManager: favoritesManager)
+    let viewModel = CitySearchViewModel(cityStore: store)
     
     return SearchinputView(viewModel: viewModel)
 }

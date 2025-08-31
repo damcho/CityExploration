@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 struct CodableCity: Codable {
     let name: String
@@ -31,21 +30,41 @@ struct CodableCity: Codable {
     }
 }
 
-class UserDefaultsFavoriteCityManager: ObservableObject {
+actor UserDefaultsFavoriteCityManager {
     static let shared = UserDefaultsFavoriteCityManager()
     
-    @Published private(set) var favoritesCities: [City] = []
+    private(set) var favoritesCities: [City] = []
+    private var observers: [UUID: @Sendable ([City]) -> Void] = [:]
     
     private let userDefaults: UserDefaults
     private let favoritesKey = "FavoriteCities"
     
     init(userDefaults: UserDefaults = UserDefaults.standard) {
         self.userDefaults = userDefaults
-        loadFavorites()
+    }
+
+    // Simple observer pattern instead of Combine
+    func addObserver(id: UUID, callback: @escaping @Sendable ([City]) -> Void) {
+        observers[id] = callback
+        // Immediately call with current state
+        let currentFavorites = favoritesCities
+        Task { @MainActor in
+            callback(currentFavorites)
+        }
     }
     
-    private convenience init() {
-        self.init(userDefaults: UserDefaults.standard)
+    func removeObserver(id: UUID) {
+        observers.removeValue(forKey: id)
+    }
+    
+    private func notifyObservers() {
+        let currentFavorites = favoritesCities
+        let currentObservers = Array(observers.values)
+        Task { @MainActor in
+            for observer in currentObservers {
+                observer(currentFavorites)
+            }
+        }
     }
     
     private func loadFavorites() {
@@ -72,34 +91,37 @@ class UserDefaultsFavoriteCityManager: ObservableObject {
         }
     }
     
-    func isFavorite(_ city: City) -> Bool {
+    func isFavorite(_ city: City) async -> Bool {
         return favoritesCities.contains(city)
     }
     
-    func toggleFavorite(_ city: City) {
+    func toggleFavorite(_ city: City) async {
         if let index = favoritesCities.firstIndex(of: city) {
             favoritesCities.remove(at: index)
         } else {
             favoritesCities.append(city)
         }
         saveFavorites()
+        notifyObservers()
     }
     
-    func addToFavorites(_ city: City) {
+    func addToFavorites(_ city: City) async {
         if !favoritesCities.contains(city) {
             favoritesCities.append(city)
             saveFavorites()
+            notifyObservers()
         }
     }
     
-    func removeFromFavorites(_ city: City) {
+    func removeFromFavorites(_ city: City) async {
         if let index = favoritesCities.firstIndex(of: city) {
             favoritesCities.remove(at: index)
             saveFavorites()
+            notifyObservers()
         }
     }
     
-    func getFavoriteCities() -> [City] {
+    func getFavoriteCities() async -> [City] {
         return favoritesCities
     }
 }
