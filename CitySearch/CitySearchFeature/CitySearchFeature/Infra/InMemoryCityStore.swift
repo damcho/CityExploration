@@ -12,11 +12,17 @@ enum CitySearchError: Error {
 }
 
 struct InMemoryCityStore {
+    struct DecodableCoordinate: Decodable {
+        let lat: Double
+        let lon: Double
+    }
     struct DecodableCity: Decodable {
         let name: String
+        let coord: DecodableCoordinate
+     
         
         func toCity() -> City {
-            City(name: name)
+            City(name: name, latitude: coord.lat, longitude: coord.lon)
         }
     }
     

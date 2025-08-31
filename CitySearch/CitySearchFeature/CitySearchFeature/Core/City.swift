@@ -9,4 +9,6 @@ import Foundation
 
 struct City: Equatable {
     let name: String
+    let latitude: Double
+    let longitude: Double
 }
