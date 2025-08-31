@@ -10,9 +10,19 @@ import SwiftUI
 import GoogleMaps
 
 public enum CitySearchComposer {
-    static public func compose() -> some View {
+    @MainActor
+    static public func compose() throws -> some View {
         GMSServices.provideAPIKey("AIzaSyAVIvISQPshSOtqRHKu7eZ3zrARhXC6bMI")
 
-        return CitySearchMapView()
+        let sampleCities = """
+        [
+            {"name": "Buenos Aires"}
+        ]
+        """
+        
+        let cityStore = try InMemoryCityStore(jsonString: sampleCities)
+        let viewModel = CitySearchViewModel(cityStore: cityStore)
+        
+        return CitySearchMapView(viewModel: viewModel)
     }
 }
