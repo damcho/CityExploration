@@ -38,28 +38,36 @@ struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, Favor
             cityCardView
                 .zIndex(1)
             
-            VStack(spacing: 0) {
+            VStack(spacing: 12) {
+                searchInputView
+                    .background(Color(.systemBackground))
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
+                
                 HStack {
                     Spacer()
                     
                     Button(action: {
                         showFavorites = true
                     }) {
-                        Image(systemName: "heart.fill")
-                            .font(.title2)
-                            .foregroundColor(.red)
-                            .padding(12)
-                            .background(Color(.systemBackground))
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                        HStack(spacing: 8) {
+                            Image(systemName: "heart.fill")
+                                .font(.title3)
+                                .foregroundColor(.red)
+                            
+                            Text("Favorites")
+                                .font(.body)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(Color(.systemBackground))
+                        .cornerRadius(20)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                     }
-                    .padding(.trailing, 16)
+                    
+                    Spacer()
                 }
-                .zIndex(3)
-                
-                searchInputView
-                    .background(Color(.systemBackground))
-                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
                 
                 Spacer()
             }

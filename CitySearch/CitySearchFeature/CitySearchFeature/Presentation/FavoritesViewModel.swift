@@ -45,7 +45,7 @@ class FavoritesViewModel: ObservableObject {
     
     func toggleFavorite(for city: City) {
         Task {
-            await favoritesManager.toggleFavorite(city)
+            try await favoritesManager.toggleFavorite(city)
         }
     }
     
@@ -55,7 +55,7 @@ class FavoritesViewModel: ObservableObject {
     
     func removeFavorite(_ city: City) {
         Task {
-            await favoritesManager.removeFromFavorites(city)
+            try await favoritesManager.removeFromFavorites(city)
         }
     }
 }

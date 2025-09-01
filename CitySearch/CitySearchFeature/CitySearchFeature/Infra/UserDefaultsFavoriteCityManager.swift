@@ -31,7 +31,8 @@ struct CodableCity: Codable {
 }
 
 actor UserDefaultsFavoriteCityManager {
-    private(set) var favoritesCities: [City] = []
+    private var favoritesCities: [City] = []
+    private var isLoaded = false
     private var observers: [UUID: @Sendable ([City]) -> Void] = [:]
     
     private let userDefaults: UserDefaults
@@ -43,6 +44,7 @@ actor UserDefaultsFavoriteCityManager {
 
     func addObserver(id: UUID, callback: @escaping @Sendable ([City]) -> Void) {
         observers[id] = callback
+        loadFavourites()
         let currentFavorites = favoritesCities
         Task { @MainActor in
             callback(currentFavorites)
@@ -63,61 +65,62 @@ actor UserDefaultsFavoriteCityManager {
         }
     }
     
-    private func loadFavorites() {
+    private func loadFavourites() {
         if let data = userDefaults.data(forKey: favoritesKey) {
             do {
                 let decoder = JSONDecoder()
                 let codableCities = try decoder.decode([CodableCity].self, from: data)
                 favoritesCities = codableCities.map { $0.toCity() }
             } catch {
-                print("Failed to decode favorites: \(error)")
                 favoritesCities = []
             }
         }
     }
     
-    private func saveFavorites() {
-        do {
-            let encoder = JSONEncoder()
-            let codableCities = favoritesCities.map { CodableCity(from: $0) }
-            let data = try encoder.encode(codableCities)
-            userDefaults.set(data, forKey: favoritesKey)
-        } catch {
-            print("Failed to encode favorites: \(error)")
-        }
+    private func saveFavorites() throws {
+        let encoder = JSONEncoder()
+        let codableCities = favoritesCities.map { CodableCity(from: $0) }
+        let data = try encoder.encode(codableCities)
+        userDefaults.set(data, forKey: favoritesKey)
+        userDefaults.synchronize()
     }
     
     func isFavorite(_ city: City) async -> Bool {
+        loadFavourites()
         return favoritesCities.contains(city)
     }
     
-    func toggleFavorite(_ city: City) async {
+    func toggleFavorite(_ city: City) async throws {
+        loadFavourites()
         if let index = favoritesCities.firstIndex(of: city) {
             favoritesCities.remove(at: index)
         } else {
             favoritesCities.append(city)
         }
-        saveFavorites()
+        try saveFavorites()
         notifyObservers()
     }
     
-    func addToFavorites(_ city: City) async {
+    func addToFavorites(_ city: City) async throws {
+        loadFavourites()
         if !favoritesCities.contains(city) {
             favoritesCities.append(city)
-            saveFavorites()
+            try saveFavorites()
             notifyObservers()
         }
     }
     
-    func removeFromFavorites(_ city: City) async {
+    func removeFromFavorites(_ city: City) async throws {
+        loadFavourites()
         if let index = favoritesCities.firstIndex(of: city) {
             favoritesCities.remove(at: index)
-            saveFavorites()
+            try saveFavorites()
             notifyObservers()
         }
     }
     
     func getFavoriteCities() async -> [City] {
+        loadFavourites()
         return favoritesCities
     }
 }

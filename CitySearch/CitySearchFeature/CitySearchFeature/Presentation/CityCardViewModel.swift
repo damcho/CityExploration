@@ -31,7 +31,7 @@ class CityCardViewModel: ObservableObject {
     
     func toggleFavorite(for city: City) {
         Task {
-            await favoritesManager.toggleFavorite(city)
+            try await favoritesManager.toggleFavorite(city)
         }
     }
     
