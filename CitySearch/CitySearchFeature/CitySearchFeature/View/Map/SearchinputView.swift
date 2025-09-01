@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchinputView: View {
     @ObservedObject var viewModel: CitySearchViewModel
+    let onCitySelected: (City) -> Void
     @FocusState private var isSearchFieldFocused: Bool
     @State private var localSearchText: String = ""
     
@@ -74,8 +75,8 @@ struct SearchinputView: View {
                         LazyVStack(alignment: .leading, spacing: 8) {
                             ForEach(viewModel.searchResults, id: \.name) { city in
                                 CityResultRow(city: city, onTap: {
-                                    viewModel.selectCity(city)
-                                    localSearchText = ""  // Explicitly clear local state
+                                    onCitySelected(city)
+                                    localSearchText = ""
                                     isSearchFieldFocused = false
                                 })
                             }
@@ -105,5 +106,7 @@ struct SearchinputView: View {
     let store = try! InMemoryCityStore(jsonString: SampleData.citiesJSON)
     let viewModel = CitySearchViewModel(cityStore: store)
     
-    return SearchinputView(viewModel: viewModel)
+    return SearchinputView(viewModel: viewModel) { city in
+        print("City selected: \(city.name)")
+    }
 }

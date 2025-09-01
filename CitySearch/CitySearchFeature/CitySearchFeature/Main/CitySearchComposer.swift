@@ -21,18 +21,16 @@ public enum CitySearchComposer {
         let cardViewModel = CityCardViewModel(favoritesManager: favoritesManager)
         let favoritesViewModel = FavoritesViewModel(favoritesManager: favoritesManager)
         
-        // Create the subviews
+        let onCitySelectedCallback: (City) -> Void = { city in
+            searchViewModel.selectCity(city)
+            cardViewModel.selectCity(city)
+        }
+        
         let mapView = GoogleMapView(viewModel: searchViewModel)
-        let cityCardView = CityCardView(
-            selectedCity: Binding(
-                get: { searchViewModel.selectedCity },
-                set: { searchViewModel.selectedCity = $0 }
-            ),
-            cardViewModel: cardViewModel
-        )
-        let searchInputView = SearchinputView(viewModel: searchViewModel)
+        let cityCardView = CityCardView(cardViewModel: cardViewModel)
+        let searchInputView = SearchinputView(viewModel: searchViewModel, onCitySelected: onCitySelectedCallback)
         let favoritesView = FavoritesView(viewModel: favoritesViewModel) { selectedCity in
-            searchViewModel.selectCity(selectedCity)
+            onCitySelectedCallback(selectedCity)
         }
         
         return CitySearchMapView(
@@ -40,9 +38,7 @@ public enum CitySearchComposer {
             cityCardView: cityCardView,
             searchInputView: searchInputView,
             favoritesView: favoritesView,
-            onCitySelected: { city in
-                searchViewModel.selectCity(city)
-            }
+            onCitySelected: onCitySelectedCallback
         )
     }
 }

@@ -9,6 +9,8 @@ import Foundation
 
 @MainActor
 class CityCardViewModel: ObservableObject {
+    @Published var selectedCity: City?
+    
     private let favoritesManager: UserDefaultsFavoriteCityManager
     private let observerId = UUID()
     
@@ -35,5 +37,9 @@ class CityCardViewModel: ObservableObject {
     
     func isFavorite(_ city: City) async -> Bool {
         await favoritesManager.isFavorite(city)
+    }
+    
+    func selectCity(_ city: City?) {
+        selectedCity = city
     }
 }

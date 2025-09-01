@@ -8,17 +8,14 @@
 import SwiftUI
 
 struct CityCardView: View {
-    @Binding var selectedCity: City?
     @ObservedObject var cardViewModel: CityCardViewModel
     
-    init(selectedCity: Binding<City?>, cardViewModel: CityCardViewModel) {
-        self._selectedCity = selectedCity
+    init(cardViewModel: CityCardViewModel) {
         self.cardViewModel = cardViewModel
     }
     
     var body: some View {
-        // City info card overlay with favorites button
-        if let selectedCity = selectedCity {
+        if let selectedCity = cardViewModel.selectedCity {
             VStack {
                 Spacer()
                 HStack {
@@ -42,7 +39,6 @@ struct CityCardView: View {
                             
                             Spacer()
                             
-                            // Favorites button
                             FavoriteButton(city: selectedCity, viewModel: cardViewModel)
                         }
                     }

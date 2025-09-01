@@ -32,15 +32,12 @@ struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, Favor
     
     var body: some View {
         ZStack(alignment: .top) {
-            // Map layer (background)
             mapView
                 .ignoresSafeArea(.container, edges: .bottom)
             
-            // City card overlay
             cityCardView
                 .zIndex(1)
             
-            // UI controls layer (top)
             VStack(spacing: 0) {
                 HStack {
                     Spacer()
@@ -70,9 +67,6 @@ struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, Favor
         }
         .sheet(isPresented: $showFavorites) {
             favoritesView
-                .onAppear {
-                    // Handle any setup needed when favorites view appears
-                }
         }
     }
 }
@@ -84,17 +78,16 @@ struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, Favor
     let cardViewModel = CityCardViewModel(favoritesManager: favoritesManager)
     let favoritesViewModel = FavoritesViewModel(favoritesManager: favoritesManager)
     
+    let onCitySelectedCallback: (City) -> Void = { city in
+        searchViewModel.selectCity(city)
+        cardViewModel.selectCity(city)
+    }
+    
     let mapView = GoogleMapView(viewModel: searchViewModel)
-    let cityCardView = CityCardView(
-        selectedCity: Binding(
-            get: { searchViewModel.selectedCity },
-            set: { searchViewModel.selectedCity = $0 }
-        ),
-        cardViewModel: cardViewModel
-    )
-    let searchInputView = SearchinputView(viewModel: searchViewModel)
+    let cityCardView = CityCardView(cardViewModel: cardViewModel)
+    let searchInputView = SearchinputView(viewModel: searchViewModel, onCitySelected: onCitySelectedCallback)
     let favoritesView = FavoritesView(viewModel: favoritesViewModel) { selectedCity in
-        searchViewModel.selectCity(selectedCity)
+        onCitySelectedCallback(selectedCity)
     }
     
     return CitySearchMapView(
@@ -102,8 +95,6 @@ struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, Favor
         cityCardView: cityCardView,
         searchInputView: searchInputView,
         favoritesView: favoritesView,
-        onCitySelected: { city in
-            searchViewModel.selectCity(city)
-        }
+        onCitySelected: onCitySelectedCallback
     )
 }
