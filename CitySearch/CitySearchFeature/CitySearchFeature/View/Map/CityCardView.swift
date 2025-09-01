@@ -57,30 +57,17 @@ struct CityCardView: View {
 struct FavoriteButton: View {
     let city: City
     @ObservedObject var viewModel: CityCardViewModel
-    @State private var isFavorite = false
-    @State private var updateTrigger = 0
     
     var body: some View {
         Button(action: {
             viewModel.toggleFavorite(for: city)
-            updateTrigger += 1
         }) {
-            Image(systemName: isFavorite ? "heart.fill" : "heart")
+            Image(systemName: viewModel.isSelectedCityFavorite ? "heart.fill" : "heart")
                 .font(.title2)
-                .foregroundColor(isFavorite ? .red : .gray)
+                .foregroundColor(viewModel.isSelectedCityFavorite ? .red : .gray)
         }
         .buttonStyle(PlainButtonStyle())
-        .scaleEffect(isFavorite ? 1.1 : 1.0)
-        .animation(.easeInOut(duration: 0.2), value: isFavorite)
-        .task {
-            isFavorite = await viewModel.isFavorite(city)
-        }
-        .task(id: updateTrigger) {
-            if updateTrigger > 0 {
-                // Small delay to ensure the toggle has completed
-                try? await Task.sleep(for: .milliseconds(50))
-                isFavorite = await viewModel.isFavorite(city)
-            }
-        }
+        .scaleEffect(viewModel.isSelectedCityFavorite ? 1.1 : 1.0)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.isSelectedCityFavorite)
     }
 }

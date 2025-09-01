@@ -45,7 +45,11 @@ class FavoritesViewModel: ObservableObject {
     
     func toggleFavorite(for city: City) {
         Task {
-            try await favoritesManager.toggleFavorite(city)
+            do {
+                try await favoritesManager.toggleFavorite(city)
+            } catch {
+                errorMessage = "Failed to toggle favorite: \(error.localizedDescription)"
+            }
         }
     }
     
@@ -55,7 +59,11 @@ class FavoritesViewModel: ObservableObject {
     
     func removeFavorite(_ city: City) {
         Task {
-            try await favoritesManager.removeFromFavorites(city)
+            do {
+                try await favoritesManager.removeFromFavorites(city)
+            } catch {
+                errorMessage = "Failed to remove favorite: \(error.localizedDescription)"
+            }
         }
     }
 }
