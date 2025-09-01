@@ -36,22 +36,15 @@ struct FavoriteCityRow: View {
                 
                 Spacer()
                 
-                VStack {
-                    // Remove from favorites button
-                    Button(action: {
-                        viewModel.removeFavorite(city)
-                    }) {
-                        Image(systemName: "heart.fill")
-                            .foregroundColor(.red)
-                            .font(.title3)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    // Navigation indicator
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.gray)
-                        .font(.caption)
+                // Remove from favorites button
+                Button(action: {
+                    viewModel.removeFavorite(city)
+                }) {
+                    Image(systemName: "heart.fill")
+                        .foregroundColor(.red)
+                        .font(.title3)
                 }
+                .buttonStyle(PlainButtonStyle())
             }
             .padding()
             .background(Color(.systemBackground))
