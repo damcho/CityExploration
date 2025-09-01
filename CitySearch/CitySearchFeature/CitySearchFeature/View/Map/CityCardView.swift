@@ -8,50 +8,51 @@
 import SwiftUI
 
 struct CityCardView: View {
-    @ObservedObject var searchViewModel: CitySearchViewModel
+    @Binding var selectedCity: City?
     @ObservedObject var cardViewModel: CityCardViewModel
     
+    init(selectedCity: Binding<City?>, cardViewModel: CityCardViewModel) {
+        self._selectedCity = selectedCity
+        self.cardViewModel = cardViewModel
+    }
+    
     var body: some View {
-        ZStack {
-            GoogleMapView(viewModel: searchViewModel)
-            
-            // City info card overlay with favorites button
-            if let selectedCity = searchViewModel.selectedCity {
-                VStack {
+        // City info card overlay with favorites button
+        if let selectedCity = selectedCity {
+            VStack {
+                Spacer()
+                HStack {
                     Spacer()
-                    HStack {
-                        Spacer()
-                        
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(selectedCity.name)
-                                        .font(.headline)
-                                        .foregroundColor(.primary)
-                                    
-                                    Text(selectedCity.country)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                    
-                                    Text("Lat: \(String(format: "%.4f", selectedCity.latitude)), Lon: \(String(format: "%.4f", selectedCity.longitude))")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(selectedCity.name)
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
                                 
-                                Spacer()
+                                Text(selectedCity.country)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
                                 
-                                // Favorites button
-                                FavoriteButton(city: selectedCity, viewModel: cardViewModel)
+                                Text("Lat: \(String(format: "%.4f", selectedCity.latitude)), Lon: \(String(format: "%.4f", selectedCity.longitude))")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
+                            
+                            Spacer()
+                            
+                            // Favorites button
+                            FavoriteButton(city: selectedCity, viewModel: cardViewModel)
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(12)
-                        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                        .padding(.trailing, 16)
                     }
-                    .padding(.bottom, 100)
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                    .padding(.trailing, 16)
                 }
+                .padding(.bottom, 100)
             }
         }
     }

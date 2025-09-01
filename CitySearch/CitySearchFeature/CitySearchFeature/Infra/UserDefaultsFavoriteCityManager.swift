@@ -31,8 +31,6 @@ struct CodableCity: Codable {
 }
 
 actor UserDefaultsFavoriteCityManager {
-    static let shared = UserDefaultsFavoriteCityManager()
-    
     private(set) var favoritesCities: [City] = []
     private var observers: [UUID: @Sendable ([City]) -> Void] = [:]
     
@@ -43,10 +41,8 @@ actor UserDefaultsFavoriteCityManager {
         self.userDefaults = userDefaults
     }
 
-    // Simple observer pattern instead of Combine
     func addObserver(id: UUID, callback: @escaping @Sendable ([City]) -> Void) {
         observers[id] = callback
-        // Immediately call with current state
         let currentFavorites = favoritesCities
         Task { @MainActor in
             callback(currentFavorites)

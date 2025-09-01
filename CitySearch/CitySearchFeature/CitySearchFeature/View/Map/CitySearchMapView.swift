@@ -7,17 +7,40 @@
 
 import SwiftUI
 
-struct CitySearchMapView: View {
-    @ObservedObject var searchViewModel: CitySearchViewModel
-    @ObservedObject var cardViewModel: CityCardViewModel
-    @ObservedObject var favoritesViewModel: FavoritesViewModel
+struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, FavoritesContent: View>: View {
+    private let mapView: MapView
+    private let cityCardView: CityCard
+    private let searchInputView: SearchInput
+    private let favoritesView: FavoritesContent
+    private let onCitySelected: (City) -> Void
+    
     @State private var showFavorites = false
+    
+    init(
+        mapView: MapView,
+        cityCardView: CityCard,
+        searchInputView: SearchInput,
+        favoritesView: FavoritesContent,
+        onCitySelected: @escaping (City) -> Void
+    ) {
+        self.mapView = mapView
+        self.cityCardView = cityCardView
+        self.searchInputView = searchInputView
+        self.favoritesView = favoritesView
+        self.onCitySelected = onCitySelected
+    }
     
     var body: some View {
         ZStack(alignment: .top) {
-            CityCardView(searchViewModel: searchViewModel, cardViewModel: cardViewModel)
+            // Map layer (background)
+            mapView
                 .ignoresSafeArea(.container, edges: .bottom)
             
+            // City card overlay
+            cityCardView
+                .zIndex(1)
+            
+            // UI controls layer (top)
             VStack(spacing: 0) {
                 HStack {
                     Spacer()
@@ -35,21 +58,21 @@ struct CitySearchMapView: View {
                     }
                     .padding(.trailing, 16)
                 }
-                .zIndex(2)
+                .zIndex(3)
                 
-                SearchinputView(viewModel: searchViewModel)
+                searchInputView
                     .background(Color(.systemBackground))
                     .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
                 
                 Spacer()
             }
-            .zIndex(1)
+            .zIndex(2)
         }
         .sheet(isPresented: $showFavorites) {
-            FavoritesView(viewModel: favoritesViewModel) { selectedCity in
-                searchViewModel.selectCity(selectedCity)
-                showFavorites = false
-            }
+            favoritesView
+                .onAppear {
+                    // Handle any setup needed when favorites view appears
+                }
         }
     }
 }
@@ -61,9 +84,26 @@ struct CitySearchMapView: View {
     let cardViewModel = CityCardViewModel(favoritesManager: favoritesManager)
     let favoritesViewModel = FavoritesViewModel(favoritesManager: favoritesManager)
     
+    let mapView = GoogleMapView(viewModel: searchViewModel)
+    let cityCardView = CityCardView(
+        selectedCity: Binding(
+            get: { searchViewModel.selectedCity },
+            set: { searchViewModel.selectedCity = $0 }
+        ),
+        cardViewModel: cardViewModel
+    )
+    let searchInputView = SearchinputView(viewModel: searchViewModel)
+    let favoritesView = FavoritesView(viewModel: favoritesViewModel) { selectedCity in
+        searchViewModel.selectCity(selectedCity)
+    }
+    
     return CitySearchMapView(
-        searchViewModel: searchViewModel,
-        cardViewModel: cardViewModel,
-        favoritesViewModel: favoritesViewModel
+        mapView: mapView,
+        cityCardView: cityCardView,
+        searchInputView: searchInputView,
+        favoritesView: favoritesView,
+        onCitySelected: { city in
+            searchViewModel.selectCity(city)
+        }
     )
 }
