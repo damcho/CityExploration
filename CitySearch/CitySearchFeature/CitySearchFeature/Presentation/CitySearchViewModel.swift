@@ -27,16 +27,11 @@ class CitySearchViewModel: ObservableObject {
         searchTask?.cancel()
     }
     
-
-    
-    // Simple debounced search without Combine
     func updateSearchText(_ newText: String) {
         searchText = newText
         
-        // Cancel previous search
         searchTask?.cancel()
         
-        // Start new search with delay
         searchTask = Task {
             try? await Task.sleep(for: .milliseconds(300))
             
