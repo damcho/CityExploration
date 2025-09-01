@@ -15,80 +15,22 @@ struct SearchinputView: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.gray)
-                    .padding(.leading, 12)
-                
-                TextField("Search for cities...", text: $localSearchText)
-                    .focused($isSearchFieldFocused)
-                    .textFieldStyle(.plain)
-                    .font(.body)
-                    .submitLabel(.search)
-                    .onChange(of: localSearchText) { _, newValue in
-                        viewModel.updateSearchText(newValue)
-                    }
-                
-                if !localSearchText.isEmpty {
-                    Button(action: {
-                        localSearchText = ""
-                        viewModel.clearSearch()
-                        isSearchFieldFocused = false
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.gray)
-                    }
-                    .padding(.trailing, 12)
+            SearchBar(
+                text: $localSearchText,
+                onTextChange: { viewModel.updateSearchText($0) },
+                onClear: {
+                    localSearchText = ""
+                    viewModel.clearSearch()
                 }
-            }
-            .padding(.vertical, 12)
-            .background(Color(.systemGray6))
-            .cornerRadius(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(isSearchFieldFocused ? Color.blue : Color.clear, lineWidth: 2)
             )
             
-            if viewModel.showSearchResults {
-                if viewModel.isLoading {
-                    HStack {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                        Text("Searching...")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
-                    .background(Color(.systemBackground).opacity(0.95))
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                } else if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .font(.caption)
-                        .foregroundColor(.red)
-                        .padding()
-                        .background(Color(.systemBackground).opacity(0.95))
-                        .cornerRadius(12)
-                        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                } else if !viewModel.searchResults.isEmpty {
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 8) {
-                            ForEach(viewModel.searchResults, id: \.name) { city in
-                                CityResultRow(city: city, onTap: {
-                                    onCitySelected(city)
-                                    localSearchText = ""
-                                    isSearchFieldFocused = false
-                                })
-                            }
-                        }
-                        .padding(.horizontal)
-                    }
-                    .frame(maxHeight: 300)
-                    .background(Color(.systemBackground).opacity(0.95))
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+            SearchResultsView(
+                viewModel: viewModel,
+                onCitySelected: { city in
+                    onCitySelected(city)
+                    localSearchText = ""
                 }
-            }
+            )
         }
         .padding()
         .onAppear {
@@ -99,6 +41,126 @@ struct SearchinputView: View {
                 localSearchText = newValue
             }
         }
+    }
+}
+
+struct SearchBar: View {
+    @Binding var text: String
+    @FocusState var isSearchFieldFocused: Bool
+    let onTextChange: (String) -> Void
+    let onClear: () -> Void
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.gray)
+                .padding(.leading, 12)
+            
+            TextField("Search for cities...", text: $text)
+                .focused($isSearchFieldFocused)
+                .textFieldStyle(.plain)
+                .font(.body)
+                .submitLabel(.search)
+                .onChange(of: text) { _, newValue in
+                    onTextChange(newValue)
+                }
+            
+            if !text.isEmpty {
+                Button(action: {
+                    onClear()
+                    isSearchFieldFocused = false
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.gray)
+                }
+                .padding(.trailing, 12)
+            }
+        }
+        .padding(.vertical, 12)
+        .background(Color(.systemGray6))
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(isSearchFieldFocused ? Color.blue : Color.clear, lineWidth: 2)
+        )
+    }
+}
+
+struct SearchResultsView: View {
+    @ObservedObject var viewModel: CitySearchViewModel
+    let onCitySelected: (City) -> Void
+    
+    var body: some View {
+        Group {
+            if viewModel.showSearchResults {
+                searchContent
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var searchContent: some View {
+        if viewModel.isLoading {
+            LoadingView()
+        } else if let errorMessage = viewModel.errorMessage {
+            ErrorView(message: errorMessage)
+        } else if !viewModel.searchResults.isEmpty {
+            ResultsList(cities: viewModel.searchResults, onCitySelected: onCitySelected)
+        }
+    }
+}
+
+struct LoadingView: View {
+    var body: some View {
+        HStack {
+            ProgressView()
+                .scaleEffect(0.8)
+            Text("Searching...")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .searchResultCard()
+    }
+}
+
+struct ErrorView: View {
+    let message: String
+    
+    var body: some View {
+        Text(message)
+            .font(.caption)
+            .foregroundColor(.red)
+            .searchResultCard()
+    }
+}
+
+struct ResultsList: View {
+    let cities: [City]
+    let onCitySelected: (City) -> Void
+    
+    var body: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 8) {
+                ForEach(cities, id: \.name) { city in
+                    CityResultRow(city: city, onTap: {
+                        onCitySelected(city)
+                    })
+                }
+            }
+            .padding(.horizontal)
+        }
+        .frame(maxHeight: 300)
+        .searchResultCard()
+    }
+}
+
+extension View {
+    func searchResultCard() -> some View {
+        self
+            .padding()
+            .background(Color(.systemBackground).opacity(0.95))
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 }
 
