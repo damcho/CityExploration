@@ -9,9 +9,11 @@ import Foundation
 
 enum CitySearchError: Error {
     case decoding
+    case fileNotFound
+    case invalidData
 }
 
-struct InMemoryCityStore {
+final class InMemoryCityStore {
     struct DecodableCoordinate: Decodable {
         let lat: Double
         let lon: Double
@@ -35,6 +37,22 @@ struct InMemoryCityStore {
         self.cities = try JSONDecoder().decode(
             [DecodableCity].self,
             from: citiesData
+        ).map({ $0.toCity() })
+    }
+    
+    init(jsonFileName: String, bundle: Bundle = Bundle(for: InMemoryCityStore.self),
+) throws {
+        guard let fileURL = bundle.url(forResource: jsonFileName, withExtension: "json") else {
+            throw CitySearchError.fileNotFound
+        }
+        
+        guard let data = try? Data(contentsOf: fileURL) else {
+            throw CitySearchError.invalidData
+        }
+        
+        self.cities = try JSONDecoder().decode(
+            [DecodableCity].self,
+            from: data
         ).map({ $0.toCity() })
     }
 }
