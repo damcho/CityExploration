@@ -7,11 +7,16 @@
 
 import Foundation
 
+enum FavoritesState {
+    case loading
+    case error(String)
+    case empty
+    case loaded([City])
+}
+
 @MainActor
 class FavoritesViewModel: ObservableObject {
-    @Published var favoriteCities: [City] = []
-    @Published var isLoading = false
-    @Published var errorMessage: String?
+    @Published var state: FavoritesState = .loading
     
     private let favoritesManager: UserDefaultsFavoriteCityManager
     private let observerId = UUID()
@@ -26,20 +31,22 @@ class FavoritesViewModel: ObservableObject {
         Task {
             await favoritesManager.addObserver(id: observerId) { @Sendable [weak self] favorites in
                 Task { @MainActor in
-                    self?.favoriteCities = favorites
+                    self?.state = .loaded(favorites)
                 }
             }
         }
     }
     
     func loadFavorites() {
-        isLoading = true
-        errorMessage = nil
+        state = .loading
         
         Task {
             let favorites = await favoritesManager.getFavoriteCities()
-            favoriteCities = favorites
-            isLoading = false
+            guard !favorites.isEmpty else {
+                state = .empty
+                return
+            }
+            state = .loaded(favorites)
         }
     }
     
@@ -48,7 +55,7 @@ class FavoritesViewModel: ObservableObject {
             do {
                 try await favoritesManager.toggleFavorite(city)
             } catch {
-                errorMessage = "Failed to toggle favorite: \(error.localizedDescription)"
+                state = .error("Failed to toggle favorite: \(error.localizedDescription)")
             }
         }
     }
@@ -61,8 +68,9 @@ class FavoritesViewModel: ObservableObject {
         Task {
             do {
                 try await favoritesManager.removeFromFavorites(city)
+                loadFavorites()
             } catch {
-                errorMessage = "Failed to remove favorite: \(error.localizedDescription)"
+                state = .error("Failed to toggle favorite: \(error.localizedDescription)")
             }
         }
     }
