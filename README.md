@@ -181,6 +181,26 @@ The `PrefixTreeInMemoryCityStore` implementation uses a Trie (prefix tree) data 
 - **Limitation**: Still requires linear scan within matching prefix range
 - **Use Case**: Better for exact city name lookups rather than prefix searches
 
+**Future Memory Optimization Improvements:**
+
+The current Trie implementation stores `City` structs (value types) directly in each node, which results in multiple copies of the same city data across different nodes. For a city like "London", the complete `City` struct is duplicated in nodes for "L", "Lo", "Lon", and "Lond". With 200,000+ cities, this creates significant memory overhead.
+
+**Optimization Strategy 1: Reference Types**
+Convert `City` from a struct to a class, allowing nodes to store references instead of copies:
+- **Memory Reduction**: Each city stored only once in memory
+- **Shared References**: Multiple nodes reference the same city instance
+- **Trade-off**: Loss of value semantics and potential reference cycles
+
+**Optimization Strategy 2: Index-Based Storage**
+Store city indices in Trie nodes instead of full city objects:
+- **Implementation**: Maintain a separate array of cities, store only indices in nodes
+- **Memory Efficiency**: Each node stores lightweight integers instead of full city data
+- **Access Pattern**: `cities[nodeIndex]` to retrieve full city information
+- **Scalability**: Minimal memory growth as dataset expands
+
+**Recommended Approach:**
+The index-based solution provides the best balance of memory efficiency and maintainability while preserving the value semantics of the `City` model. This optimization would be particularly beneficial when scaling beyond 200,000 cities or when memory constraints become critical on older devices.
+
 #### **2. Actor-Based Concurrency**
 - **Component**: `UserDefaultsFavoriteCityManager` as Swift Actor
 - **Benefit**: Thread-safe favorites management without data races
