@@ -90,7 +90,7 @@ The City Explorer application follows a **Clean Architecture** approach with cle
 - **Components**:
   - `City` - Core domain model (value type)
   - `CitySearchable` - Search abstraction protocol
-  - `CodableCity` - Persistence adapter for UserDefaults
+  - `SortedCitySearchDecorator` - Business rule implementation for alphabetical sorting
 - **Design**: Protocol-driven development for testability and flexibility
 
 #### 🏗️ **Infrastructure Layer**
@@ -98,7 +98,7 @@ The City Explorer application follows a **Clean Architecture** approach with cle
 - **Components**:
   - `PrefixTreeInMemoryCityStore` - High-performance Trie-based search (200k+ cities)
   - `UserDefaultsFavoriteCityManager` - Thread-safe favorites persistence (Actor-based)
-  - `SortedCitySearchDecorator` - Search result sorting decorator
+  - `CodableCity` - Persistence adapter for UserDefaults serialization
 - **Features**: JSON data loading, UserDefaults persistence, observer pattern for reactive updates
 
 #### 🔗 **Composition Layer**
@@ -257,95 +257,95 @@ gantt
     End-to-End Testing         :e2e, after integration, 3d
 ```
 
-#### **Phase 1: Foundation (Days 1-4) - 2 Developers**
+#### **Phase 1: Foundation**
 
-**Developer A: Core Architecture**
+**Core Architecture Work:**
 - `City` domain model and `Identifiable` conformance
 - `CitySearchable` protocol definition
 - `CodableCity` persistence adapter
 - `CitySearchComposer` dependency injection setup
 
-**Developer B: Infrastructure Setup**
+**Infrastructure Setup Work:**
 - Project structure and module organization
 - Google Maps SDK integration
 - Bundle resource configuration
 - Initial test framework setup
 
-#### **Phase 2: Data Layer (Days 2-7) - 3 Developers**
+#### **Phase 2: Data Layer**
 
-**Developer C: Search Engine**
+**Search Engine Work:**
 - `PrefixTreeInMemoryCityStore` implementation
 - Trie data structure optimization
 - JSON parsing and city loading
 - Search performance benchmarking
 
-**Developer D: Persistence Layer**
+**Persistence Layer Work:**
 - `UserDefaultsFavoriteCityManager` as Swift Actor
 - Observer pattern for reactive updates
 - Thread-safety and concurrency handling
 - Persistence error handling
 
-**Developer E: Data Decorators**
+**Data Decorators Work:**
 - `SortedCitySearchDecorator` implementation
 - Search result sorting algorithms
 - Extensible decorator pattern setup
 - Performance testing for large datasets
 
-#### **Phase 3: Business Logic (Days 4-8) - 3 Developers**
+#### **Phase 3: Business Logic**
 
-**Developer A: Search Logic**
+**Search Logic Work:**
 - `CitySearchViewModel` implementation
 - Debounced search with `Task` management
 - Real-time search state management
 - Search result filtering and display logic
 
-**Developer B: Favorites Logic**
+**Favorites Logic Work:**
 - `FavoritesViewModel` implementation
 - Favorites list management
 - Add/remove favorites functionality
 - Persistence integration
 
-**Developer C: Selection Logic**
+**Selection Logic Work:**
 - `CityCardViewModel` implementation
 - Selected city state management
 - Favorites integration for selected cities
 - Cross-component communication
 
-#### **Phase 4: UI Layer (Days 4-9) - 4 Developers**
+#### **Phase 4: UI Layer**
 
-**Developer F: Search Interface**
+**Search Interface Work:**
 - `SearchinputView` with real-time updates
 - Search results display with `LazyVStack`
 - Debounced input handling
 - Search state UI (loading, error, empty)
 
-**Developer G: Map Integration**
+**Map Integration Work:**
 - `GoogleMapView` SwiftUI wrapper
 - City marker display and animation
 - Map camera controls and gestures
 - Location-based UI updates
 
-**Developer H: Favorites Interface**
+**Favorites Interface Work:**
 - `FavoritesView` with list management
 - Add/remove favorites UI
 - Empty state and error handling
 - Navigation and modal presentation
 
-**Developer I: Details & Layout**
+**Details & Layout Work:**
 - `CityCardView` overlay implementation
 - `CitySearchMapView` main coordinator
 - Tab-based navigation setup
 - Responsive layout for orientations
 
-#### **Phase 5: Integration & Testing (Days 8-12) - Full Team**
+#### **Phase 5: Integration & Testing**
 
-**Integration Team (2 developers):**
+**Integration Work:**
 - Component assembly in `CitySearchComposer`
 - Cross-component callback coordination
 - End-to-end flow testing
 - Performance optimization
 
-**QA Team (2 developers):**
+**QA Work:**
 - Unit test coverage for all components
 - UI automation tests
 - Performance benchmarking
