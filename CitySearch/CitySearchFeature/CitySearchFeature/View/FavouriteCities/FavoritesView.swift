@@ -68,7 +68,7 @@ struct FavoritesView: View {
                 } else {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 12) {
-                            ForEach(viewModel.favoriteCities, id: \.name) { city in
+                            ForEach(viewModel.favoriteCities, id: \.id) { city in
                                 FavoriteCityRow(city: city, onTap: {
                                     onCitySelected?(city)
                                 }, viewModel: viewModel)

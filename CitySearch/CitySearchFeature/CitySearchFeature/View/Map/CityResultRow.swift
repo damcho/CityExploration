@@ -49,7 +49,8 @@ struct CityResultRow: View {
         name: "London",
         country: "GB",
         latitude: 51.5074,
-        longitude: -0.1278
+        longitude: -0.1278,
+        id: 1
     )
     
     return CityResultRow(city: sampleCity) {

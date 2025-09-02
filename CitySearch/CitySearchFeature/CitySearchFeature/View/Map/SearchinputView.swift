@@ -141,7 +141,7 @@ struct ResultsList: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 8) {
-                ForEach(cities, id: \.name) { city in
+                ForEach(cities, id: \.id) { city in
                     CityResultRow(city: city, onTap: {
                         onCitySelected(city)
                     })

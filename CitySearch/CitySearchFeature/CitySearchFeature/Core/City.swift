@@ -7,9 +7,10 @@
 
 import Foundation
 
-struct City: Equatable {
+struct City: Equatable, Identifiable {
     let name: String
     let country: String
     let latitude: Double
     let longitude: Double
+    let id: Int
 }

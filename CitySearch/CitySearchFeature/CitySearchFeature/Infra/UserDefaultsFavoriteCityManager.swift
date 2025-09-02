@@ -12,12 +12,14 @@ struct CodableCity: Codable {
     let country: String
     let latitude: Double
     let longitude: Double
+    let id: Int
     
     init(from city: City) {
         self.name = city.name
         self.country = city.country
         self.latitude = city.latitude
         self.longitude = city.longitude
+        self.id = city.id
     }
     
     func toCity() -> City {
@@ -25,7 +27,8 @@ struct CodableCity: Codable {
             name: name,
             country: country,
             latitude: latitude,
-            longitude: longitude
+            longitude: longitude,
+            id: id
         )
     }
 }

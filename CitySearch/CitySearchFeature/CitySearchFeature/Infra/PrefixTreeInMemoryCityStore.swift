@@ -22,9 +22,10 @@ final class PrefixTreeInMemoryCityStore {
         let name: String
         let coord: DecodableCoordinate
         let country: String
+        let _id: Int
         
         func toCity() -> City {
-            City(name: name, country: country, latitude: coord.lat, longitude: coord.lon)
+            City(name: name, country: country, latitude: coord.lat, longitude: coord.lon, id: _id)
         }
     }
     

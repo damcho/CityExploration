@@ -60,7 +60,8 @@ struct FavoriteCityRow: View {
         name: "Paris",
         country: "FR",
         latitude: 48.8566,
-        longitude: 2.3522
+        longitude: 2.3522,
+        id: 1
     )
     
     let favoritesManager = UserDefaultsFavoriteCityManager()

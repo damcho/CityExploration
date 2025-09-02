@@ -70,7 +70,7 @@ extension InMemoryCityStoreTests {
 
 func city(name: String) -> (model: City, raw: [String: Any]) {
     (
-        City(name: name, country: "",latitude: 0.0, longitude: 0.0),
+        City(name: name, country: "",latitude: 0.0, longitude: 0.0, id: 0),
         ["country": "", "name": name, "_id": 0, "coord": ["lon": 0.0, "lat": 0.0]]
     )
 }
