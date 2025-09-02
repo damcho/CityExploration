@@ -11,15 +11,13 @@ struct SearchinputView: View {
     @ObservedObject var viewModel: CitySearchViewModel
     let onCitySelected: (City) -> Void
     @FocusState private var isSearchFieldFocused: Bool
-    @State private var localSearchText: String = ""
     
     var body: some View {
         VStack(spacing: 16) {
             SearchBar(
-                text: $localSearchText,
+                text: $viewModel.searchText,
                 onTextChange: { viewModel.updateSearchText($0) },
                 onClear: {
-                    localSearchText = ""
                     viewModel.clearSearch()
                 }
             )
@@ -28,19 +26,10 @@ struct SearchinputView: View {
                 viewModel: viewModel,
                 onCitySelected: { city in
                     onCitySelected(city)
-                    localSearchText = ""
                 }
             )
         }
         .padding()
-        .onAppear {
-            localSearchText = viewModel.searchText
-        }
-        .onChange(of: viewModel.searchText) { _, newValue in
-            if localSearchText != newValue {
-                localSearchText = newValue
-            }
-        }
     }
 }
 
@@ -91,15 +80,6 @@ struct SearchResultsView: View {
     let onCitySelected: (City) -> Void
     
     var body: some View {
-        Group {
-            if viewModel.showSearchResults {
-                searchContent
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private var searchContent: some View {
         if viewModel.isLoading {
             LoadingView()
         } else if let errorMessage = viewModel.errorMessage {

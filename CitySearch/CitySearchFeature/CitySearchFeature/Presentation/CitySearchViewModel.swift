@@ -11,10 +11,9 @@ import Foundation
 class CitySearchViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var searchResults: [City] = []
-    @Published var isLoading = false
+    var isLoading = false
     @Published var errorMessage: String?
     @Published var selectedCity: City?
-    @Published var showSearchResults = false
     
     let cityStore: CitySearchable
     private let searchPolicy: SearchPolicy
@@ -44,19 +43,14 @@ class CitySearchViewModel: ObservableObject {
     }
     
     private func performSearch(query: String) async {
-        guard searchPolicy.shouldExecuteSearch(for: query) else {
-            searchResults = []
-            showSearchResults = false
-            errorMessage = nil
-            isLoading = false
-            return
-        }
-        
-        isLoading = true
         errorMessage = nil
-        showSearchResults = true
-        
+        isLoading = false
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+                        
+        guard searchPolicy.shouldExecuteSearch(for: trimmedQuery) else { return }
+                
         do {
+            isLoading = true
             let results = try await cityStore.search(for: query)
             searchResults = results
             isLoading = false
@@ -67,14 +61,12 @@ class CitySearchViewModel: ObservableObject {
         } catch {
             errorMessage = "Search failed: \(error.localizedDescription)"
             isLoading = false
-            searchResults = []
         }
     }
     
     func selectCity(_ city: City) {
         selectedCity = city
         searchText = ""
-        showSearchResults = false
         searchResults = []
         errorMessage = nil
     }
@@ -83,7 +75,6 @@ class CitySearchViewModel: ObservableObject {
         searchText = ""
         searchResults = []
         errorMessage = nil
-        showSearchResults = false
         selectedCity = nil
     }
 }
