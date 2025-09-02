@@ -23,7 +23,7 @@ struct CityResultRow: View {
                         .font(.body)
                         .foregroundColor(.primary)
                     
-                    Text("Lat: \(String(format: "%.4f", city.latitude)), Lon: \(String(format: "%.4f", city.longitude))")
+                    Text(city.country)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
