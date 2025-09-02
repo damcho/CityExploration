@@ -36,6 +36,18 @@ As a user, I want the app to load a map and display a search bar so I can search
 ### Use Cases
 
 #### 🔍 Search City
+```mermaid
+flowchart TD
+    A[User opens app] --> B[User starts typing city name]
+    B --> C{Characters >= 3?}
+    C -->|No| B
+    C -->|Yes| D[Search displays matching cities]
+    D --> E[Results ordered alphabetically by city, then country]
+    E --> F[User taps on city from search list]
+    F --> G[City is displayed on map with marker]
+    G --> H[City card overlay appears]
+```
+
 1. User starts typing city name
 2. After three characters typed, search displays cities matching the prefix
 3. Results are ordered by city and country alphabetically  
@@ -43,6 +55,17 @@ As a user, I want the app to load a map and display a search bar so I can search
 5. City is displayed on map
 
 #### ⭐ Select Favourite
+```mermaid
+flowchart TD
+    A[User searches for city] --> B[City displayed on map]
+    B --> C[City card overlay shows]
+    C --> D[User taps heart icon]
+    D --> E[City added to favorites]
+    E --> F[Heart icon fills with red]
+    F --> G[City appears in favorites section]
+    G --> H[Favorites persisted for future app launches]
+```
+
 1. User searches for a city
 2. City is displayed on map
 3. User can save city as favourite
@@ -50,11 +73,32 @@ As a user, I want the app to load a map and display a search bar so I can search
 4. favorite cities are persisted on future app launches
 
 #### ⭐ Unselect Favourite
+```mermaid
+flowchart TD
+    A[User enters Favorites section] --> B[Favorites list displayed]
+    B --> C[User taps heart icon on favorite city]
+    C --> D[City removed from favorites]
+    D --> E[City disappears from favorites list]
+    E --> F{Favorites list empty?}
+    F -->|Yes| G[Empty state message shown]
+    F -->|No| H[Remaining favorites displayed]
+```
+
 1. User enters Favorite section
 2. User can uncheck city as favourite
 3. City gets removed from favourites section
 
 #### 🚫 Empty Search
+```mermaid
+flowchart TD
+    A[User starts typing] --> B[Search query entered]
+    B --> C{City exists in database?}
+    C -->|Yes| D[Results displayed]
+    C -->|No| E[No results message shown]
+    E --> F[User sees empty search state]
+    F --> G[User can try different search term]
+```
+
 1. User searches for a non-existing city name
 2. No results are displayed
 
