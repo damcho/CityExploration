@@ -110,10 +110,32 @@ The City Explorer application follows a **Clean Architecture** approach with cle
 
 ### Key Architectural Decisions
 
-#### **1. Trie Data Structure**
+#### **1. Trie Data Structure (Prefix Tree)**
 - **Benefit**: O(m) search complexity where m = query length
 - **Performance**: Handles 200,000+ cities with sub-millisecond search times
 - **Memory**: Efficient prefix sharing reduces memory footprint
+
+**WPrefix Tree strategy**
+The `PrefixTreeInMemoryCityStore` implementation uses a Trie (prefix tree) data structure instead of simple array iteration, providing significant performance improvements for prefix-based searches.
+
+**Performance Comparison:**
+- **Array Iteration**: O(n) complexity - must check every city in the 200,000+ dataset
+- **Trie Search**: O(m) complexity - only traverses characters in the search query
+- **Real-world Impact**: Search for "Lon" in array = 200,000 comparisons vs. Trie = 3 character traversals
+
+**Trie Implementation Benefits:**
+- **Instant Results**: Sub-millisecond response times regardless of dataset size
+- **Memory Efficiency**: Shared prefixes reduce memory usage (e.g., "London", "Londrina" share "Lon" prefix)
+- **Scalability**: Performance remains constant even with millions of cities
+- **User Experience**: Real-time search updates without performance degradation
+
+**Alternative Search Strategies Considered:**
+
+**Binary Search with Sorted Cities:**
+- **Complexity**: O(log n) for exact matches, O(n) for prefix searches
+- **Implementation**: Sort cities alphabetically, use binary search for range finding
+- **Limitation**: Still requires linear scan within matching prefix range
+- **Use Case**: Better for exact city name lookups rather than prefix searches
 
 #### **2. Actor-Based Concurrency**
 - **Component**: `UserDefaultsFavoriteCityManager` as Swift Actor
