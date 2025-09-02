@@ -378,6 +378,16 @@ Red → Green → Refactor
 - **Design Quality**: Forces consideration of component interfaces
 - **Documentation**: Tests serve as living documentation
 
+**TDD Implementation Scope:**
+In this project, we implemented TDD specifically for the `PrefixTreeInMemoryCityStore` due to its critical performance requirements and complex algorithm implementation. However, in a complete development cycle, **every file that contains business logic should follow the TDD approach**. This includes:
+
+- **ViewModels**: `CitySearchViewModel`, `FavoritesViewModel`, `CityCardViewModel`
+- **Infrastructure Components**: `UserDefaultsFavoriteCityManager`, `SortedCitySearchDecorator`
+- **Core Business Logic**: Any future service classes, managers, or utility functions
+- **Data Processing**: JSON parsing, city filtering, search algorithms
+
+The TDD approach ensures that complex logic is thoroughly tested and well-designed from the start, preventing bugs and making refactoring safer throughout the development process.
+
 #### **Unit Testing Strategy**
 
 The testing approach follows the standard testing pyramid with 70% unit tests, 20% integration tests, and 10% UI tests. This distribution ensures fast feedback cycles while maintaining comprehensive coverage.
