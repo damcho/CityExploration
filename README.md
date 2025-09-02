@@ -17,6 +17,47 @@ The CitySearch feature is the core functionality of City Explorer, providing use
 
 The CitySearch feature leverages a high-performance prefix tree (Trie) data structure for lightning-fast search results, ensuring smooth user experience even with the large dataset. Search results are intelligently sorted and presented in a user-friendly format that makes it easy to distinguish between cities with similar names across different countries.
 
+## User Story & Requirements
+
+### Narrative
+As a user, I want the app to load a map and display a search bar so I can search for a specific city and see its details.
+
+### Acceptance Criteria
+✅ **Real-time Prefix Search**: When the user starts typing in the search bar, the search must be done by prefix, updating the search on each character typed, displaying the search results in real time
+
+✅ **Alphabetical Sorting**: Searched cities must be sorted alphabetically by name first and then country
+
+✅ **Map Integration**: A city icon must appear on the map after selecting the searched city
+
+✅ **Favorites Management**: The user can select the searched city as favourite city and access it directly from the favourites section when re-launching the app
+
+✅ **Orientation Support**: The feature must support portrait and landscape modes
+
+### Use Cases
+
+#### 🔍 Search City
+1. User starts typing city name
+2. After three characters typed, search displays cities matching the prefix
+3. Results are ordered by city and country alphabetically  
+4. User taps on searched city from search list
+5. City is displayed on map
+
+#### ⭐ Select Favourite
+1. User searches for a city
+2. City is displayed on map
+3. User can save city as favourite
+4. City shows on favourites section
+4. favorite cities are persisted on future app launches
+
+#### ⭐ Unselect Favourite
+1. User enters Favorite section
+2. User can uncheck city as favourite
+3. City gets removed from favourites section
+
+#### 🚫 Empty Search
+1. User searches for a non-existing city name
+2. No results are displayed
+
 ## Technical Requirements
 
 ### Development Stack
