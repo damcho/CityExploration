@@ -414,8 +414,8 @@ The CI pipeline automatically runs comprehensive quality checks on every pull re
 - [ ] No functions exceed 50 lines
 - [ ] Documentation updated for public APIs
 
-**Code Review Checklist:**
-- Code coverage validation is not mentiones since code coverage by itself will not guarantee good quality in the app. Instead, focusing on adding trsts to every piece of code we push, will ensure the feature behaves the way we want, and code coverage will increase as a side effect
+**NOTE:**
+- `Code coverage` validation in the MR is not mentioned since code coverage by itself will not guarantee good quality of the app. Instead, focusing on adding tests to every piece of code we push, will increase the chances that the feature behaves the way we want, and code coverage will increase as a side effect. Ensuring a 80% code coverage theshold will only encourage devs to push flaky tests that only execute code without assertions
 
 ## Delivery Strategy
 
