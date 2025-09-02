@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "9CDBDC33-C664-48FC-AEA3-313439F312CC",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:CitySearch.xcodeproj",
+      "identifier" : "8B2714F32E64C6A5002CD8D9",
+      "name" : "CitySearch"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:CitySearch.xcodeproj",
+        "identifier" : "8B2715002E64C6A7002CD8D9",
+        "name" : "CitySearchTests"
+      }
+    }
+  ],
+  "version" : 1
+}
