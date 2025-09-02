@@ -63,8 +63,8 @@ struct InMemoryCityStoreTests {
 
 extension InMemoryCityStoreTests {
     
-    private func makeSUT(cities: String = "[]") -> InMemoryCityStore {
-        return try! InMemoryCityStore(jsonString: cities)
+    private func makeSUT(cities: String = "[]") -> PrefixTreeInMemoryCityStore {
+        return try! PrefixTreeInMemoryCityStore(jsonString: cities)
     }
 }
 
