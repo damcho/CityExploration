@@ -58,6 +58,78 @@ As a user, I want the app to load a map and display a search bar so I can search
 1. User searches for a non-existing city name
 2. No results are displayed
 
+## Solution Design
+
+### Architecture Overview
+
+The City Explorer application follows a **Clean Architecture** approach with clear separation of concerns, implementing the **MVVM (Model-View-ViewModel)** pattern with **SwiftUI** for the presentation layer. The architecture is organized into distinct layers that promote maintainability, testability, and scalability.
+
+![Architecture Diagram](CitySearchArchitecture.drawio.png)
+
+### Layer Structure
+
+#### 🎨 **Presentation & UI Layer**
+- **Framework**: SwiftUI with MVVM pattern
+- **Components**: 
+  - `CitySearchMapView` - Main coordinator view with dependency injection
+  - `SearchinputView` - Real-time search interface with debouncing
+  - `CityCardView` - City details overlay with favorites integration
+  - `FavoritesView` - Favorites management interface
+  - `GoogleMapView` - Map integration with city markers
+
+#### 🧠 **ViewModel Layer**
+- **Purpose**: Business logic and state management
+- **Components**:
+  - `CitySearchViewModel` - Search state and city selection logic
+  - `FavoritesViewModel` - Favorites list management
+  - `CityCardViewModel` - Selected city state and favorites interaction
+- **Features**: Reactive UI updates with `@Published` properties, async task management
+
+#### 🔧 **Core Layer**
+- **Purpose**: Domain models and business protocols
+- **Components**:
+  - `City` - Core domain model (value type)
+  - `CitySearchable` - Search abstraction protocol
+  - `CodableCity` - Persistence adapter for UserDefaults
+- **Design**: Protocol-driven development for testability and flexibility
+
+#### 🏗️ **Infrastructure Layer**
+- **Purpose**: Data sources, persistence, and external services
+- **Components**:
+  - `PrefixTreeInMemoryCityStore` - High-performance Trie-based search (200k+ cities)
+  - `UserDefaultsFavoriteCityManager` - Thread-safe favorites persistence (Actor-based)
+  - `SortedCitySearchDecorator` - Search result sorting decorator
+- **Features**: JSON data loading, UserDefaults persistence, observer pattern for reactive updates
+
+#### 🔗 **Composition Layer**
+- **Purpose**: Dependency injection and app assembly
+- **Components**:
+  - `CitySearchComposer` - Main composition root
+  - Constructor injection for all dependencies
+  - Shared callback coordination between ViewModels
+
+### Key Architectural Decisions
+
+#### **1. Trie Data Structure**
+- **Benefit**: O(m) search complexity where m = query length
+- **Performance**: Handles 200,000+ cities with sub-millisecond search times
+- **Memory**: Efficient prefix sharing reduces memory footprint
+
+#### **2. Actor-Based Concurrency**
+- **Component**: `UserDefaultsFavoriteCityManager` as Swift Actor
+- **Benefit**: Thread-safe favorites management without data races
+- **Pattern**: Observer pattern for reactive UI updates
+
+#### **3. Decorator Pattern**
+- **Implementation**: `SortedCitySearchDecorator` wraps search functionality
+- **Benefit**: Separation of search logic from sorting logic
+- **Extensibility**: Easy to add new behaviors (filtering, caching, etc.)
+
+#### **4. Dependency Injection**
+- **Pattern**: Constructor injection throughout the application
+- **Composition Root**: Single point of dependency graph assembly
+- **Benefits**: Testability, flexibility, and clear dependency flow
+
 ## Technical Requirements
 
 ### Development Stack
