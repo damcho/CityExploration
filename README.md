@@ -385,6 +385,72 @@ The CI pipeline automatically runs comprehensive quality checks on every pull re
 **Code Review Checklist:**
 - Code coverage validation is not mentiones since code coverage by itself will not guarantee good quality in the app. Instead, focusing on adding trsts to every piece of code we push, will ensure the feature behaves the way we want, and code coverage will increase as a side effect
 
+## Delivery Strategy
+
+### **Trunk-Based Development with Short-Lived Feature Branches**
+
+The team will follow a **trunk-based development** approach using short-lived feature branches to avoid the complexity and integration issues that come with long-lived feature branches. Developers create small feature branches that are merged back to main within 1-2 days through pull requests.
+
+**Benefits of Trunk-Based Development:**
+- **Reduced Integration Conflicts**: Small, frequent merges minimize the risk of complex merge conflicts
+- **Faster Feedback**: Changes are integrated quickly, allowing rapid detection of issues
+- **Simplified Workflow**: No need to manage multiple long-lived branches or complex merge strategies
+- **Continuous Integration**: Every pull request triggers the full CI pipeline, ensuring quality at all times
+
+**Implementation Strategy:**
+- Feature development is broken into small, deployable increments
+- Each feature branch lives for a maximum of 1-2 days before being merged
+- Pull requests are small, focused, and reviewed quickly
+- Developers sync with main frequently (at least twice daily) before creating new branches
+- Feature flags are used to hide incomplete features from end users
+- Direct commits to main are blocked - all changes go through pull request review
+
+### **Sprint-Based TestFlight Delivery**
+
+At the end of every sprint, a build containing all completed features will be automatically delivered to **TestFlight** for stakeholder and QA validation.
+
+**TestFlight Delivery Pipeline:**
+- **Automated Build Generation**: CI/CD pipeline creates release candidates automatically
+- **Feature Documentation**: Each build includes release notes detailing new features and changes
+- **Stakeholder Access**: Product owners, designers, and key stakeholders receive immediate access
+- **QA Validation**: Quality assurance team can test features in a production-like environment
+- **Client Feedback**: Early user feedback collection through TestFlight's built-in feedback mechanisms
+
+**Benefits of Frequent TestFlight Releases:**
+- **Early Feedback**: Stakeholders can provide input before features reach production
+- **Risk Mitigation**: Issues are discovered in a controlled environment
+- **Validation Cycles**: Product decisions can be validated with real user interaction
+- **Quality Assurance**: QA team has consistent access to latest features for comprehensive testing
+
+### **Error Reduction Through Frequent Delivery**
+
+Delivering small changes frequently significantly reduces the likelihood of introducing critical errors and makes any issues easier to identify and resolve.
+
+**Small Change Benefits:**
+- **Easier Debugging**: When issues arise, the scope of potential causes is limited to recent small changes
+- **Quick Rollbacks**: If problems are detected, rolling back small changes is fast and low-risk
+- **Reduced Complexity**: Small changes are easier to review, test, and understand
+- **Faster Resolution**: Development team can quickly identify and fix issues since context is fresh
+
+**Quality Assurance Through Frequency:**
+- Each small change goes through the full CI/CD pipeline
+- Automated tests catch regressions immediately
+- Manual testing can focus on specific areas affected by recent changes
+- Production monitoring can quickly identify any performance or functionality issues
+
+### **Production Rollout Strategy**
+
+For rolling out features to production users, we implement a **feature flag strategy** that provides granular control over feature availability and allows for safe, gradual rollouts.
+
+**Feature Flag Implementation:**
+- **Gradual Rollout**: Start with 5% of users, gradually increase to 25%, 50%, then 100%
+- **Device-Based Targeting**: Enable features only for users with specific device capabilities (iPhone 15+, iPad Pro, etc.)
+- **iOS Version Targeting**: Restrict features to users running minimum iOS versions that support all functionality
+- **Geographic Rollout**: Test features in specific regions before global deployment
+- **User Segment Targeting**: Enable features for power users or beta testers first
+
+This delivery strategy ensures that the Smart City Exploration feature can be developed, tested, and deployed with minimal risk while maximizing opportunities for feedback and validation throughout the development cycle.
+
 ### **Team Communication Strategy**
 
 #### **Daily Standups Focus:**
