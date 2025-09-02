@@ -14,7 +14,8 @@ public enum CitySearchComposer {
     static public func compose() throws -> some View {
         GMSServices.provideAPIKey("AIzaSyAVIvISQPshSOtqRHKu7eZ3zrARhXC6bMI")
         
-        let cityStore = try PrefixTreeInMemoryCityStore(jsonFileName: "cities")
+        let prefixTreeStore = try PrefixTreeInMemoryCityStore(jsonFileName: "cities")
+        let cityStore = SortedCitySearchDecorator(decoratee: prefixTreeStore)
         let favoritesManager = UserDefaultsFavoriteCityManager()
         
         let searchViewModel = CitySearchViewModel(cityStore: cityStore)
