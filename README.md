@@ -130,6 +130,80 @@ The City Explorer application follows a **Clean Architecture** approach with cle
 - **Composition Root**: Single point of dependency graph assembly
 - **Benefits**: Testability, flexibility, and clear dependency flow
 
+### Technical Decisions & Architectural Patterns
+
+#### **Abstraction-Driven Design**
+
+The architecture heavily emphasizes **abstraction layers** to ensure flexibility and maintainability. 
+If we wanted to use a backend service in the future as the data source, we could implement a `RemoteCitySearchService` that implements our `CitySearchable` protocol and replace the `PrefixTreeInMemoryCityStore` with it in the composition layer
+
+##### **1. Protocol-Based Data Layer (`CitySearchable`)**
+```swift
+protocol CitySearchable {
+    func search(for query: String) async throws -> [City]
+}
+```
+
+**Why This Matters:**
+- **Future-Proof**: When transitioning from local JSON to backend API, only the implementation changes
+- **Testability**: Easy to mock for unit testing without external dependencies
+- **Flexibility**: Multiple implementations can coexist (local cache + remote API)
+
+**Backend Transition Example:**
+```swift
+// Current: Local JSON implementation
+let localStore = PrefixTreeInMemoryCityStore(jsonFileName: "cities")
+
+// Future: Backend API implementation
+let remoteStore = RemoteCitySearchService(apiClient: httpClient)
+
+// Composition layer remains unchanged
+let searchViewModel = CitySearchViewModel(cityStore: remoteStore)
+```
+
+##### **2. SOLID Principles Implementation**
+
+**Single Responsibility Principle (SRP)**
+- `PrefixTreeInMemoryCityStore`: Only handles Trie-based search
+- `SortedCitySearchDecorator`: Only handles result sorting
+- `UserDefaultsFavoriteCityManager`: Only manages favorites persistence
+
+**Open/Closed Principle (OCP)**
+- `CitySearchable` protocol allows extension without modification
+- Decorator pattern enables adding new behaviors (caching, filtering) without changing existing code
+
+**Liskov Substitution Principle (LSP)**
+- Any `CitySearchable` implementation can replace another seamlessly
+- ViewModels work with abstractions, not concrete implementations
+
+**Interface Segregation Principle (ISP)**
+- Focused protocols: `CitySearchable` only defines search behavior
+- No forced implementation of unused methods
+
+**Dependency Inversion Principle (DIP)**
+- High-level modules (ViewModels) depend on abstractions (`CitySearchable`)
+- Low-level modules (data stores) implement these abstractions
+
+#### **4. Dependency Injection Architecture**
+
+**Composition Root Pattern**
+The `CitySearchComposer` serves as the single point where all dependencies are assembled:
+
+```swift
+// Current implementation
+let cityStore = SortedCitySearchDecorator(
+    decoratee: PrefixTreeInMemoryCityStore(jsonFileName: "cities")
+)
+
+// Future backend implementation (zero changes to ViewModels)
+let cityStore = SortedCitySearchDecorator(
+    decoratee: CachedRemoteCitySearchService(
+        remoteStore: RemoteCitySearchService(apiClient: httpClient),
+        cacheStore: InMemoryCityStore()
+    )
+)
+```
+
 ## Technical Requirements
 
 ### Development Stack
