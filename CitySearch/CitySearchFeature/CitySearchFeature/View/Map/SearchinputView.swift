@@ -5,6 +5,7 @@
 //  Created by Damian Modernell on 31/8/25.
 //
 
+import Foundation
 import SwiftUI
 
 struct SearchinputView: View {
@@ -80,12 +81,15 @@ struct SearchResultsView: View {
     let onCitySelected: (City) -> Void
     
     var body: some View {
-        if viewModel.isLoading {
+        switch viewModel.searchState {
+        case .loading:
             LoadingView()
-        } else if let errorMessage = viewModel.errorMessage {
-            ErrorView(message: errorMessage)
-        } else if !viewModel.searchResults.isEmpty {
-            ResultsList(cities: viewModel.searchResults, onCitySelected: onCitySelected)
+        case .error(let message):
+            ErrorView(message: message)
+        case .loaded(let cities):
+            ResultsList(cities: cities, onCitySelected: onCitySelected)
+        case .empty:
+            EmptyView()
         }
     }
 }
@@ -148,7 +152,7 @@ extension View {
     let store = try! PrefixTreeInMemoryCityStore(jsonString: SampleData.citiesJSON)
     let viewModel = CitySearchViewModel(cityStore: store, searchPolicy: MinimumCharacterSearchPolicy())
     
-    return SearchinputView(viewModel: viewModel) { city in
+    SearchinputView(viewModel: viewModel) { city in
         print("City selected: \(city.name)")
     }
 }

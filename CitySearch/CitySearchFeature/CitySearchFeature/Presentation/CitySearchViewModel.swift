@@ -10,9 +10,7 @@ import Foundation
 @MainActor
 class CitySearchViewModel: ObservableObject {
     @Published var searchText = ""
-    @Published var searchResults: [City] = []
-    var isLoading = false
-    @Published var errorMessage: String?
+    @Published var searchState: CitiesState = .empty
     @Published var selectedCity: City?
     
     let cityStore: CitySearchable
@@ -43,38 +41,36 @@ class CitySearchViewModel: ObservableObject {
     }
     
     private func performSearch(query: String) async {
-        errorMessage = nil
-        isLoading = false
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-                        
-        guard searchPolicy.shouldExecuteSearch(for: trimmedQuery) else { return }
-                
+    
+        guard searchPolicy.shouldExecuteSearch(for: trimmedQuery) else {
+            return
+        }
+        
         do {
-            isLoading = true
+            searchState = .loading
+
             let results = try await cityStore.search(for: query)
-            searchResults = results
-            isLoading = false
             
             if results.isEmpty {
-                errorMessage = "No cities found matching '\(query)'"
+                searchState = .error("No cities found matching '\(query)'")
+            } else {
+                searchState = .loaded(results)
             }
         } catch {
-            errorMessage = "Search failed: \(error.localizedDescription)"
-            isLoading = false
+            searchState = .error("Search failed: \(error.localizedDescription)")
         }
     }
     
     func selectCity(_ city: City) {
         selectedCity = city
         searchText = ""
-        searchResults = []
-        errorMessage = nil
+        searchState = .empty
     }
     
     func clearSearch() {
         searchText = ""
-        searchResults = []
-        errorMessage = nil
+        searchState = .empty
         selectedCity = nil
     }
 }

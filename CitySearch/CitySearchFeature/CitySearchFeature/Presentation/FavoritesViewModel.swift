@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum FavoritesState {
+enum CitiesState {
     case loading
     case error(String)
     case empty
@@ -16,7 +16,7 @@ enum FavoritesState {
 
 @MainActor
 class FavoritesViewModel: ObservableObject {
-    @Published var state: FavoritesState = .loading
+    @Published var state: CitiesState = .loading
     
     private let favoritesManager: UserDefaultsFavoriteCityManager
     private let observerId = UUID()
