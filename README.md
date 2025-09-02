@@ -451,6 +451,167 @@ For rolling out features to production users, we implement a **feature flag stra
 
 This delivery strategy ensures that the Smart City Exploration feature can be developed, tested, and deployed with minimal risk while maximizing opportunities for feedback and validation throughout the development cycle.
 
+## Product Success Observability
+
+### **Event Logging Strategy**
+
+To measure the success and adoption of the Smart City Exploration feature, we implement comprehensive event logging that tracks user interactions and feature utilization patterns.
+
+**Core Success Metrics Through Event Logging:**
+
+**Search Feature Analytics:**
+- `city_search_completed` - User selects a city from search results
+- `search_results_count` - Monitor search result quality and relevance
+
+**Favorites Feature Analytics:**
+- `favorites_screen_viewed` - User navigates to favorites screen (key metric for feature adoption)
+- `city_added_to_favorites` - User marks a city as favorite
+- `city_removed_from_favorites` - User removes city from favorites
+- `favorites_list_empty_viewed` - User sees empty favorites state
+- `favorite_city_selected` - User selects city from favorites list
+
+**User Journey Analytics:**
+- `app_session_started` - Track overall app engagement
+- `feature_discovery_time` - Time taken to discover favorites feature
+- `session_duration` - How long users spend in the city exploration feature
+- `user_retention_daily` - Daily active users using city search
+- `user_retention_weekly` - Weekly retention for the feature
+
+### **Analytics Implementation**
+
+**Firebase Analytics Integration:**
+Firebase Analytics provides a robust, cloud-based solution for tracking user behavior and measuring feature success without requiring complex infrastructure setup.
+
+### **Analytics Implementation Example**
+
+**Decorator Pattern for Analytics Logging:**
+Using the decorator pattern, we can add analytics logging to existing components without modifying their core functionality. Here's how we would implement analytics tracking for the search functionality:
+
+```swift
+// Analytics Protocol
+protocol AnalyticsHandler {
+    func logEvent(_ eventName: String, parameters: [String: Any]?)
+}
+
+// Firebase Analytics Implementation
+class FirebaseAnalyticsHandler: AnalyticsHandler {
+    func logEvent(_ eventName: String, parameters: [String: Any]?) {
+        Analytics.logEvent(eventName, parameters: parameters)
+    }
+}
+
+// Analytics Decorator for CitySearchable
+class AnalyticsDecoratedCityStore: CitySearchable {
+    private let decoratee: CitySearchable
+    private let analyticsHandler: AnalyticsHandler
+    
+    init(decoratee: CitySearchable, analyticsHandler: AnalyticsHandler) {
+        self.decoratee = decoratee
+        self.analyticsHandler = analyticsHandler
+    }
+    
+    func search(for query: String) async throws -> [City] {
+        // Log search initiated event
+        analyticsHandler.logEvent("city_search_initiated", parameters: [
+            "query_length": query.count,
+            "query_prefix": String(query.prefix(3)) // First 3 characters for pattern analysis
+        ])
+        
+        let startTime = Date()
+        
+        do {
+            let results = try await decoratee.search(for: query)
+            
+            let searchDuration = Date().timeIntervalSince(startTime)
+            
+            if results.isEmpty {
+                // Log search with no results
+                analyticsHandler.logEvent("city_search_no_results", parameters: [
+                    "query": query,
+                    "search_duration": searchDuration
+                ])
+            } else {
+                // Log successful search
+                analyticsHandler.logEvent("city_search_completed", parameters: [
+                    "results_count": results.count,
+                    "search_duration": searchDuration,
+                    "query_length": query.count
+                ])
+            }
+            
+            return results
+            
+        } catch {
+            // Log search failure
+            analyticsHandler.logEvent("search_operation_failed", parameters: [
+                "error": error.localizedDescription,
+                "query": query,
+                "search_duration": Date().timeIntervalSince(startTime)
+            ])
+            
+            throw error
+        }
+    }
+}
+
+// Composition in CitySearchComposer
+public enum CitySearchComposer {
+    @MainActor
+    static public func compose() throws -> some View {
+        GMSServices.provideAPIKey("AIzaSyAVIvISQPshSOtqRHKu7eZ3zrARhXC6bMI")
+        
+        // Create analytics handler
+        let analyticsHandler = FirebaseAnalyticsHandler()
+        
+        // Create base store
+        let prefixTreeStore = try PrefixTreeInMemoryCityStore(jsonFileName: "cities")
+        
+        // Decorate with analytics
+        let analyticsStore = AnalyticsDecoratedCityStore(
+            decoratee: prefixTreeStore, 
+            analyticsHandler: analyticsHandler
+        )
+        
+        // Decorate with sorting
+        let cityStore = SortedCitySearchDecorator(decoratee: analyticsStore)
+        
+        // Continue with rest of composition...
+        let searchViewModel = CitySearchViewModel(cityStore: cityStore)
+        // ...
+    }
+}
+```
+
+**Benefits of This Approach:**
+- **Separation of Concerns**: Analytics logic is separate from search logic
+- **Testability**: Can inject mock analytics handler for testing
+- **Flexibility**: Can easily add/remove analytics without changing core functionality
+- **Composability**: Multiple decorators can be chained (analytics + sorting + caching)
+- **Single Responsibility**: Each decorator has one specific purpose
+
+### **Crash and Error Tracking**
+
+**Critical Stability Monitoring:**
+Comprehensive crash and error tracking is essential for maintaining feature reliability and user trust. We implement multi-layered error monitoring to capture and resolve issues before they impact user experience.
+
+**Crash Analytics:**
+- **App Crashes**: Track crashes specifically related to city search functionality
+- **Feature-Specific Crashes**: Monitor crashes during search operations, favorites management, and map interactions
+- **Memory-Related Crashes**: Identify crashes caused by large dataset handling (200k+ cities)
+- **Concurrency Crashes**: Track Swift Actor-related crashes in favorites persistence
+- **UI Crashes**: Monitor SwiftUI-related crashes during view transitions and state updates
+
+**Error Event Tracking:**
+- `search_operation_failed` - Search queries that result in errors or timeouts
+- `favorites_save_failed` - Failures when adding/removing cities from favorites
+- `map_loading_failed` - Google Maps integration failures
+- `json_parsing_failed` - City data loading and parsing errors
+- `network_request_failed` - Future backend integration error tracking
+- `user_defaults_access_failed` - Persistence layer errors
+
+**Firebase Crashlytics Integration:**
+Firebase Crashlytics provides comprehensive crash reporting and error tracking capabilities that integrate seamlessly with our existing Firebase Analytics implementation.
+
 ### **Team Communication Strategy**
 
 #### **Daily Standups Focus:**
