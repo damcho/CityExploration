@@ -17,8 +17,9 @@ public enum CitySearchComposer {
         let prefixTreeStore = try PrefixTreeInMemoryCityStore(jsonFileName: "cities")
         let cityStore = SortedCitySearchDecorator(decoratee: prefixTreeStore)
         let favoritesManager = UserDefaultsFavoriteCityManager()
+        let searchPolicy = MinimumCharacterSearchPolicy(minimumCharacters: 3)
         
-        let searchViewModel = CitySearchViewModel(cityStore: cityStore)
+        let searchViewModel = CitySearchViewModel(cityStore: cityStore, searchPolicy: searchPolicy)
         let cardViewModel = CityCardViewModel(favoritesManager: favoritesManager)
         let favoritesViewModel = FavoritesViewModel(favoritesManager: favoritesManager)
         

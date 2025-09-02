@@ -17,10 +17,12 @@ class CitySearchViewModel: ObservableObject {
     @Published var showSearchResults = false
     
     let cityStore: CitySearchable
+    private let searchPolicy: SearchPolicy
     private var searchTask: Task<Void, Never>?
     
-    init(cityStore: CitySearchable) {
+    init(cityStore: CitySearchable, searchPolicy: SearchPolicy) {
         self.cityStore = cityStore
+        self.searchPolicy = searchPolicy
     }
     
     deinit {
@@ -42,7 +44,7 @@ class CitySearchViewModel: ObservableObject {
     }
     
     private func performSearch(query: String) async {
-        guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        guard searchPolicy.shouldExecuteSearch(for: query) else {
             searchResults = []
             showSearchResults = false
             errorMessage = nil

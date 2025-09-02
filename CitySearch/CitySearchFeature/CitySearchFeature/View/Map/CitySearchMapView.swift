@@ -82,7 +82,7 @@ struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, Favor
 #Preview {
     let store = try! PrefixTreeInMemoryCityStore(jsonString: SampleData.citiesJSON)
     let favoritesManager = UserDefaultsFavoriteCityManager()
-    let searchViewModel = CitySearchViewModel(cityStore: store)
+    let searchViewModel = CitySearchViewModel(cityStore: store, searchPolicy: MinimumCharacterSearchPolicy())
     let cardViewModel = CityCardViewModel(favoritesManager: favoritesManager)
     let favoritesViewModel = FavoritesViewModel(favoritesManager: favoritesManager)
     

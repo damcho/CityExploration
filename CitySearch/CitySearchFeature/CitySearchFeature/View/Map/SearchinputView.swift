@@ -166,7 +166,7 @@ extension View {
 
 #Preview {
     let store = try! PrefixTreeInMemoryCityStore(jsonString: SampleData.citiesJSON)
-    let viewModel = CitySearchViewModel(cityStore: store)
+    let viewModel = CitySearchViewModel(cityStore: store, searchPolicy: MinimumCharacterSearchPolicy())
     
     return SearchinputView(viewModel: viewModel) { city in
         print("City selected: \(city.name)")
