@@ -402,7 +402,7 @@ The testing approach follows the standard testing pyramid with 70% unit tests, 2
 
 #### **Continuous Integration Quality Gates**
 
-The CI pipeline automatically runs comprehensive quality checks on every pull request. This includes linting validation, formatting verification, complete test suite execution, and code coverage analysis. The pipeline blocks merging of code that doesn't meet established quality standards, preventing technical debt accumulation.
+The CI pipeline automatically runs comprehensive quality checks on every pull request. This includes linting validation, formatting verification, complete test suite execution. The pipeline blocks merging of code that doesn't meet established quality standards, preventing technical debt accumulation.
 
 #### **Team Quality Standards**
 
