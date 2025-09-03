@@ -51,6 +51,7 @@ struct SearchBar: View {
                 .textFieldStyle(.plain)
                 .font(.body)
                 .submitLabel(.search)
+                .autocorrectionDisabled()
                 .onChange(of: text) { _, newValue in
                     onTextChange(newValue)
                 }
