@@ -31,15 +31,19 @@ public enum CitySearchComposer {
         let mapView = GoogleMapView(viewModel: searchViewModel)
         let cityCardView = CityCardView(cardViewModel: cardViewModel)
         let searchInputView = SearchinputView(viewModel: searchViewModel, onCitySelected: onCitySelectedCallback)
-        let favoritesView = FavoritesView(viewModel: favoritesViewModel) { selectedCity in
-            onCitySelectedCallback(selectedCity)
-        }
-        
         return CitySearchMapView(
             mapView: mapView,
             cityCardView: cityCardView,
             searchInputView: searchInputView,
-            favoritesView: favoritesView,
+            favoritesViewBuilder: { onDismiss in
+                FavoritesView(
+                    viewModel: favoritesViewModel,
+                    onCitySelected: { selectedCity in
+                        onCitySelectedCallback(selectedCity)
+                    },
+                    onDismiss: onDismiss
+                )
+            },
             onCitySelected: onCitySelectedCallback
         )
     }

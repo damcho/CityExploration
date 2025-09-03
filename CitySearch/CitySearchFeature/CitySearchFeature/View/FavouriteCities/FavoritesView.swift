@@ -10,6 +10,13 @@ import SwiftUI
 struct FavoritesView: View {
     @ObservedObject var viewModel: FavoritesViewModel
     var onCitySelected: ((City) -> Void)?
+    var onDismiss: (() -> Void)?
+    
+    init(viewModel: FavoritesViewModel, onCitySelected: ((City) -> Void)? = nil, onDismiss: (() -> Void)? = nil) {
+        self.viewModel = viewModel
+        self.onCitySelected = onCitySelected
+        self.onDismiss = onDismiss
+    }
     
     var body: some View {
         NavigationView {
@@ -34,7 +41,10 @@ struct FavoritesView: View {
         case .empty:
             FavoritesEmptyView()
         case .loaded(let cities):
-            FavoritesListView(cities: cities, onCitySelected: onCitySelected, viewModel: viewModel)
+            FavoritesListView(cities: cities, onCitySelected: { city in
+                onCitySelected?(city)
+                onDismiss?()
+            }, viewModel: viewModel)
         }
     }
 }

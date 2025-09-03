@@ -11,7 +11,7 @@ struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, Favor
     private let mapView: MapView
     private let cityCardView: CityCard
     private let searchInputView: SearchInput
-    private let favoritesView: FavoritesContent
+    private let favoritesViewBuilder: (@escaping () -> Void) -> FavoritesContent
     private let onCitySelected: (City) -> Void
     
     @State private var showFavorites = false
@@ -20,13 +20,13 @@ struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, Favor
         mapView: MapView,
         cityCardView: CityCard,
         searchInputView: SearchInput,
-        favoritesView: FavoritesContent,
+        favoritesViewBuilder: @escaping (@escaping () -> Void) -> FavoritesContent,
         onCitySelected: @escaping (City) -> Void
     ) {
         self.mapView = mapView
         self.cityCardView = cityCardView
         self.searchInputView = searchInputView
-        self.favoritesView = favoritesView
+        self.favoritesViewBuilder = favoritesViewBuilder
         self.onCitySelected = onCitySelected
     }
     
@@ -74,7 +74,9 @@ struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, Favor
             .zIndex(2)
         }
         .sheet(isPresented: $showFavorites) {
-            favoritesView
+            favoritesViewBuilder {
+                showFavorites = false
+            }
         }
     }
 }
@@ -94,15 +96,19 @@ struct CitySearchMapView<MapView: View, CityCard: View, SearchInput: View, Favor
     let mapView = GoogleMapView(viewModel: searchViewModel)
     let cityCardView = CityCardView(cardViewModel: cardViewModel)
     let searchInputView = SearchinputView(viewModel: searchViewModel, onCitySelected: onCitySelectedCallback)
-    let favoritesView = FavoritesView(viewModel: favoritesViewModel) { selectedCity in
-        onCitySelectedCallback(selectedCity)
-    }
-    
     return CitySearchMapView(
         mapView: mapView,
         cityCardView: cityCardView,
         searchInputView: searchInputView,
-        favoritesView: favoritesView,
+        favoritesViewBuilder: { onDismiss in
+            FavoritesView(
+                viewModel: favoritesViewModel,
+                onCitySelected: { city in
+                    onCitySelectedCallback(city)
+                },
+                onDismiss: onDismiss
+            )
+        },
         onCitySelected: onCitySelectedCallback
     )
 }
